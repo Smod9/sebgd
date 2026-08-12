@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import { assertAdmin } from "@/lib/auth";
-import { getPost, getPostById, publishPost, updatePost } from "@/lib/posts";
+import {
+  getPost,
+  getPostById,
+  publishPost,
+  softDeletePost,
+  updatePost,
+} from "@/lib/posts";
 import { POST_TYPES, type PostType } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -64,4 +70,16 @@ export async function PATCH(request: Request, ctx: Ctx) {
 
   if (!post) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json({ post });
+}
+
+export async function DELETE(request: Request, ctx: Ctx) {
+  const denied = assertAdmin(request);
+  if (denied) return denied;
+  const { id } = await ctx.params;
+  const byId = await getPostById(id);
+  const post = byId
+    ? await softDeletePost({ id: byId.id })
+    : await softDeletePost({ slug: id });
+  if (!post) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  return NextResponse.json({ post, deleted: true });
 }

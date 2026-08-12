@@ -145,15 +145,29 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
       },
     },
     {
+      name: "delete_post",
+      description: "Soft-delete a post by id or slug.",
+      inputSchema: {
+        type: "object",
+        properties: { id: { type: "string" } },
+        required: ["id"],
+      },
+    },
+    {
       name: "upload_image",
-      description: "Upload an image (stub until Blob is configured).",
+      description:
+        "Upload an image to Vercel Blob (requires BLOB_READ_WRITE_TOKEN). Returns public URL.",
       inputSchema: {
         type: "object",
         properties: {
           filename: { type: "string" },
           content_base64: { type: "string" },
+          contentType: {
+            type: "string",
+            description: "e.g. image/jpeg, image/png, image/webp",
+          },
         },
-        required: ["filename"],
+        required: ["filename", "content_base64"],
       },
     },
   ],
@@ -195,6 +209,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         result = await api("/api/admin/now", {
           method: "PUT",
           body: { items: args.items },
+        });
+        break;
+      case "delete_post":
+        result = await api(`/api/admin/posts/${encodeURIComponent(args.id)}`, {
+          method: "DELETE",
         });
         break;
       case "upload_image":

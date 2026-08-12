@@ -5,6 +5,7 @@ import {
   getMarkdownPost,
   listMarkdownPosts,
   publishMarkdownPost,
+  softDeleteMarkdownPost,
   updateMarkdownPost,
 } from "./markdown-store";
 import type { Post, PostInput, PostType } from "./types";
@@ -31,6 +32,9 @@ function rowToPost(row: Record<string, unknown>): Post {
       row.meta && typeof row.meta === "object"
         ? (row.meta as Record<string, unknown>)
         : {},
+    deleted_at: row.deleted_at
+      ? new Date(String(row.deleted_at)).toISOString()
+      : null,
   };
 }
 
@@ -54,6 +58,7 @@ export async function listPosts(options?: {
   type?: PostType | PostType[];
   status?: "draft" | "published" | "all";
   includeNow?: boolean;
+  includeDeleted?: boolean;
 }): Promise<Post[]> {
   const status = options?.status ?? "published";
   const types = options?.type
@@ -68,6 +73,9 @@ export async function listPosts(options?: {
     if (db) {
       const rows = await db`SELECT * FROM posts ORDER BY published_at DESC NULLS LAST, created_at DESC`;
       let posts = (rows as Record<string, unknown>[]).map(rowToPost);
+      if (!options?.includeDeleted) {
+        posts = posts.filter((p) => !p.deleted_at);
+      }
       if (status !== "all") posts = posts.filter((p) => p.status === status);
       if (types) posts = posts.filter((p) => types.includes(p.type));
       if (!options?.includeNow) posts = posts.filter((p) => p.type !== "now");
@@ -76,6 +84,9 @@ export async function listPosts(options?: {
   }
 
   let posts = await listMarkdownPosts();
+  if (!options?.includeDeleted) {
+    posts = posts.filter((p) => !p.deleted_at);
+  }
   if (status !== "all") posts = posts.filter((p) => p.status === status);
   if (types) posts = posts.filter((p) => types.includes(p.type));
   if (!options?.includeNow) posts = posts.filter((p) => p.type !== "now");
@@ -87,12 +98,13 @@ export async function getPost(slug: string): Promise<Post | null> {
     await ensureSchema();
     const db = getDb();
     if (db) {
-      const rows = await db`SELECT * FROM posts WHERE slug = ${slug} LIMIT 1`;
+      const rows = await db`SELECT * FROM posts WHERE slug = ${slug} AND deleted_at IS NULL LIMIT 1`;
       if (rows[0]) return rowToPost(rows[0] as Record<string, unknown>);
       return null;
     }
   }
-  return getMarkdownPost(slug);
+  const post = await getMarkdownPost(slug);
+  return post && !post.deleted_at ? post : null;
 }
 
 export async function getPostById(id: string): Promise<Post | null> {
@@ -101,7 +113,10 @@ export async function getPostById(id: string): Promise<Post | null> {
     const db = getDb();
     if (db) {
       const rows = await db`SELECT * FROM posts WHERE id = ${id} LIMIT 1`;
-      if (rows[0]) return rowToPost(rows[0] as Record<string, unknown>);
+      if (rows[0]) {
+        const post = rowToPost(rows[0] as Record<string, unknown>);
+        return post;
+      }
       return null;
     }
   }
@@ -209,6 +224,38 @@ export async function publishPost(slug: string): Promise<Post | null> {
     );
   }
   return publishMarkdownPost(slug);
+}
+
+export async function softDeletePost(identifier: {
+  id?: string;
+  slug?: string;
+}): Promise<Post | null> {
+  const current = identifier.id
+    ? await getPostById(identifier.id)
+    : identifier.slug
+      ? await getPost(identifier.slug)
+      : null;
+  if (!current || current.deleted_at) return null;
+
+  const deletedAt = new Date().toISOString();
+
+  if (hasDatabaseUrl()) {
+    await ensureSchema();
+    const db = getDb();
+    if (db) {
+      await db`
+        UPDATE posts SET
+          deleted_at = ${deletedAt},
+          status = 'draft',
+          updated_at = NOW()
+        WHERE id = ${current.id}
+      `;
+      const rows = await db`SELECT * FROM posts WHERE id = ${current.id} LIMIT 1`;
+      return rows[0] ? rowToPost(rows[0] as Record<string, unknown>) : null;
+    }
+  }
+
+  return softDeleteMarkdownPost(current.slug, deletedAt);
 }
 
 export async function setNow(items: string[]): Promise<Post> {

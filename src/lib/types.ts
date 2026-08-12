@@ -24,6 +24,7 @@ export type Post = {
   tags: string[];
   cover_blob_url: string | null;
   meta: Record<string, unknown>;
+  deleted_at: string | null;
 };
 
 export type PostInput = {

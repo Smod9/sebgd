@@ -38,6 +38,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# cursor (project mcp.json may hold secrets — use ~/.cursor/mcp.json)
+.cursor/mcp.json
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

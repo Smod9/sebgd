@@ -20,6 +20,7 @@ Personal site for **Sebastien Gouin-Davis** — notes, work stubs, boat log, and
 | `/boat` | Bon Vivant log |
 | `/quests` | Side quests |
 | `/about` | Bio + Now |
+| `/admin` (`/write`) | Token-gated compose + manage (not in public nav) |
 | `/rss.xml` | RSS |
 
 ## Env vars
@@ -31,7 +32,7 @@ See `.env.example`:
 | `SEBGD_ADMIN_TOKEN` | for writes | Bearer token for `/api/admin/*` and MCP |
 | `NEXT_PUBLIC_SITE_URL` | recommended | Canonical URL for RSS/OG |
 | `DATABASE_URL` | optional | Neon — when unset, markdown store is used |
-| `BLOB_READ_WRITE_TOKEN` | optional | Image upload (stubbed until set) |
+| `BLOB_READ_WRITE_TOKEN` | for images | Vercel Blob (`vercel blob create-store`) |
 
 ## Local
 
@@ -49,9 +50,11 @@ See [`mcp/README.md`](./mcp/README.md). Point Cursor at `mcp/src/index.mjs` with
 ## Admin API (Bearer token)
 
 - `GET/POST /api/admin/posts`
-- `GET/PATCH /api/admin/posts/[id]` (`action: "publish"` supported)
+- `GET/PATCH/DELETE /api/admin/posts/[id]` (`action: "publish"`; DELETE soft-deletes)
 - `GET/PUT /api/admin/now`
-- `POST /api/admin/upload` (501 until Blob)
+- `POST /api/admin/upload` (multipart `file` or JSON `content_base64`; needs Blob token)
+
+Web UI: open `/admin`, paste `SEBGD_ADMIN_TOKEN`, compose/publish, attach images.
 
 ## Neon
 

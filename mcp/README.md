@@ -9,12 +9,14 @@ Manage posts on [sebgd.com](https://sebgd.com) from Cursor via the protected adm
 - `create_post` — note | essay | work | boat_log | quest | now
 - `update_post` — patch fields
 - `publish_post` — set published + timestamp
+- `delete_post` — soft-delete
 - `set_now` — replace About/Now bullets
-- `upload_image` — stub until `BLOB_READ_WRITE_TOKEN` is set
+- `upload_image` — Vercel Blob (`BLOB_READ_WRITE_TOKEN`)
 
 ## Cursor MCP config
 
-Add to `~/.cursor/mcp.json` (or project `.cursor/mcp.json`):
+Prefer **user-level** `~/.cursor/mcp.json` so the admin token is never committed.
+Project `.cursor/mcp.json` is gitignored if you use it locally.
 
 ```json
 {
@@ -44,3 +46,4 @@ cd mcp && npm install
 ```
 
 Auth uses the same `SEBGD_ADMIN_TOKEN` as the Next.js app (`Authorization: Bearer …`).
+Web UI: `/admin` (paste token into sessionStorage; no public nav link).

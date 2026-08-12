@@ -33,12 +33,15 @@ export async function ensureSchema(): Promise<boolean> {
           tags TEXT[] NOT NULL DEFAULT '{}',
           cover_blob_url TEXT,
           meta JSONB NOT NULL DEFAULT '{}'::jsonb,
+          deleted_at TIMESTAMPTZ,
           created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
           updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
         )
       `;
+      await db`ALTER TABLE posts ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ`;
       await db`CREATE INDEX IF NOT EXISTS posts_type_idx ON posts (type)`;
       await db`CREATE INDEX IF NOT EXISTS posts_status_published_idx ON posts (status, published_at DESC)`;
+      await db`CREATE INDEX IF NOT EXISTS posts_deleted_at_idx ON posts (deleted_at)`;
     })();
   }
   await schemaReady;

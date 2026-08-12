@@ -55,6 +55,12 @@ function fromMatter(filePath: string, raw: string): Post {
       data.meta && typeof data.meta === "object" && !Array.isArray(data.meta)
         ? (data.meta as Record<string, unknown>)
         : {},
+    deleted_at:
+      data.deleted_at instanceof Date
+        ? data.deleted_at.toISOString()
+        : typeof data.deleted_at === "string"
+          ? data.deleted_at
+          : null,
   };
 }
 
@@ -78,6 +84,7 @@ function serialize(post: Post): string {
     tags: post.tags,
     cover_blob_url: post.cover_blob_url,
     meta: post.meta,
+    deleted_at: post.deleted_at,
   };
   return matter.stringify(post.body + "\n", front);
 }
@@ -127,6 +134,7 @@ export async function createMarkdownPost(input: PostInput): Promise<Post> {
     tags: input.tags ?? [],
     cover_blob_url: input.cover_blob_url ?? null,
     meta: input.meta ?? {},
+    deleted_at: null,
   };
 
   await fs.writeFile(fileForSlug(slug), serialize(post), "utf8");
@@ -174,4 +182,20 @@ export async function publishMarkdownPost(slug: string): Promise<Post | null> {
     status: "published",
     published_at: new Date().toISOString(),
   });
+}
+
+export async function softDeleteMarkdownPost(
+  slug: string,
+  deletedAt = new Date().toISOString(),
+): Promise<Post | null> {
+  const current = await getMarkdownPost(slug);
+  if (!current) return null;
+  const next: Post = {
+    ...current,
+    status: "draft",
+    deleted_at: deletedAt,
+    meta: { ...current.meta, deleted_at: deletedAt },
+  };
+  await fs.writeFile(fileForSlug(slug), serialize(next), "utf8");
+  return next;
 }
