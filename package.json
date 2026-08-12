@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "mcp": "node mcp/src/index.mjs"
+    "mcp": "node mcp/src/index.mjs",
+    "seed": "node --env-file=.env.local scripts/seed.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
