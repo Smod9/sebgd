@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageIntro } from "@/components/PageChrome";
@@ -7,6 +6,8 @@ import { renderMarkdown } from "@/lib/markdown";
 import { getShowcaseWork } from "@/lib/project-showcase";
 import { WORK_STUBS } from "@/lib/site";
 import { projectUrl } from "@/lib/publishing";
+import { ProjectPreview } from "@/components/ProjectPreview";
+import { projectEmbedUrl } from "@/lib/project-embed";
 
 export const dynamic = "force-dynamic";
 
@@ -53,7 +54,6 @@ export default async function WorkDetailPage({ params }: Props) {
   const lessons = typeof post?.meta.learnings === "string" ? post.meta.learnings.trim() : "";
   const lessonsHtml = lessons ? await renderMarkdown(lessons) : "";
   const cover = post ? post.cover_blob_url || `/api/social-card/${encodeURIComponent(post.slug)}` : null;
-  const preview = cover ? <Image src={cover} alt={`${title} project preview`} width={1200} height={630} unoptimized sizes="(max-width: 800px) 100vw, 60vw" style={{ objectPosition: typeof post?.meta.cover_position === "string" ? post.meta.cover_position : undefined }} /> : null;
 
   return (
     <article className="article-page project-page">
@@ -70,9 +70,7 @@ export default async function WorkDetailPage({ params }: Props) {
             {repository ? <a href={repository} className="btn btn-secondary" target="_blank" rel="noopener noreferrer">Source code ↗</a> : null}
           </div> : null}
         </div>
-        {preview ? website ? <a className="project-preview" href={website} target="_blank" rel="noopener noreferrer" aria-label={`Visit ${title}`}>
-          {preview}<span className="project-preview-caption"><span>{new URL(website).hostname.replace(/^www\./, "")}</span><span aria-hidden="true">↗</span></span>
-        </a> : <div className="project-preview">{preview}</div> : null}
+        {cover ? <ProjectPreview key={slug} title={title} cover={cover} website={website} embedUrl={projectEmbedUrl(website, post?.meta.embed_preview)} coverPosition={typeof post?.meta.cover_position === "string" ? post.meta.cover_position : undefined} /> : null}
       </div>
       <div className={`project-story${lessons ? " has-lessons" : ""}`}>
         <section className="project-details" aria-label="Project details"><div className="body-html" dangerouslySetInnerHTML={{ __html: html }} /></section>

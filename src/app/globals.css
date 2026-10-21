@@ -614,6 +614,12 @@ button, input, textarea, select { font: inherit; }
 .project-preview { display: block; min-width: 0; overflow: hidden; border: 1px solid var(--color-line); border-radius: 12px; background: #fff; text-decoration: none; }
 .project-preview img { display: block; width: 100%; height: auto; aspect-ratio: 1200 / 630; object-fit: cover; }
 .project-preview-caption { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 12px 16px; border-top: 1px solid var(--color-line); color: var(--color-muted); font-size: 12px; }
+.project-preview-caption a { display: flex; align-items: center; gap: 12px; min-width: 0; text-decoration: none; }
+.project-preview-caption a span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.project-preview-caption button { flex-shrink: 0; border: 0; padding: 0; background: transparent; color: var(--color-text); font-size: 12px; cursor: pointer; text-decoration: underline; }
+.project-preview-separate { font-size: 11px; text-align: right; }
+.project-live-viewport { height: 460px; background: #fff; }
+.project-live-viewport iframe { display: block; width: 100%; height: 100%; border: 0; }
 .project-story { padding-top: 32px; border-top: 1px solid var(--color-line); }
 .project-story.has-lessons { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; }
 .project-story .body-html { font-size: 16px; }
@@ -621,6 +627,7 @@ button, input, textarea, select { font: inherit; }
 .project-story .body-html > :last-child { margin-bottom: 0; }
 .project-lessons h2 { margin: 0 0 18px; font-size: 22px; font-weight: 500; letter-spacing: -.035em; }
 @media (max-width: 800px) {
+  .project-live-viewport { height: clamp(340px, 60vh, 520px); }
   .project-overview.has-preview { grid-template-columns: minmax(0, 1fr); gap: 28px; }
   .project-story.has-lessons { grid-template-columns: minmax(0, 1fr); gap: 32px; }
   .project-lessons { padding-top: 28px; border-top: 1px solid var(--color-line); }

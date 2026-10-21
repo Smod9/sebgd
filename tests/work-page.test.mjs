@@ -240,29 +240,41 @@ test("project pipeline keeps metadata, uses the automatic card, and hides drafts
     const html = renderToStaticMarkup(await Detail({ params: Promise.resolve({ slug: draft.slug }) }));
     assert.match(html, /href="https:\/\/example.com\/demo"/);
     assert.match(html, /Source code/);
-    assert.match(html, /src="\/api\/social-card\/new-tool"/);
+    assert.match(html, /<iframe[^>]+src="https:\/\/example.com\/demo"/);
     assert.doesNotMatch(html, /What I learned/);
     await assert.rejects(() => store.updatePost({ id: post.id }, { meta: { demo_url: "javascript:alert(1)" } }), /http or https/);
   });
 });
 
-test("project pages show the official preview and saved lessons without inventing empty sections", async () => {
+test("project pages embed the real website, retain image fallback, and show saved lessons", async () => {
   await withLocalStore(async (source) => {
     const store = source("lib/posts.ts");
     const post = await store.createPost({ type: "work", slug: "community", title: "Community project", body: "The project story.", status: "published", cover_blob_url: "https://example.com/official-card.png", meta: { summary: "A place for the fleet.", demo_url: "https://example.com/", learnings: "My first **community** site.\n\n- Dynamic social cards\n- Keep things simple" } });
     const { default: Detail } = source("app/work/[slug]/page.tsx");
     const html = renderToStaticMarkup(await Detail({ params: Promise.resolve({ slug: post.slug }) }));
-    assert.match(html, /src="https:\/\/example.com\/official-card.png"/);
+    assert.match(html, /<iframe[^>]+src="https:\/\/example.com\/"/);
+    assert.match(html, /title="Community project live website preview"/);
+    assert.match(html, /Show image/);
     assert.match(html, /aria-label="Visit Community project"/);
     assert.match(html, /A place for the fleet\./);
     assert.match(html, /What I learned/);
     assert.match(html, /<strong>community<\/strong>/);
     assert.match(html, /<li>Dynamic social cards<\/li>/);
-    await store.updatePost({ id: post.id }, { meta: { ...post.meta, learnings: "  " } });
+    await store.updatePost({ id: post.id }, { meta: { ...post.meta, learnings: "  ", embed_preview: false } });
     const empty = renderToStaticMarkup(await Detail({ params: Promise.resolve({ slug: post.slug }) }));
     assert.doesNotMatch(empty, /What I learned/);
     assert.match(empty, /The project story\./);
+    assert.match(empty, /src="https:\/\/example.com\/official-card.png"/);
+    assert.doesNotMatch(empty, /<iframe/);
   });
+});
+
+test("framing-blocked and sign-in-only project sites keep the image preview", () => {
+  const { projectEmbedUrl } = loadSource(path.join(root, "src/lib/project-embed.ts"));
+  assert.equal(projectEmbedUrl("https://shift.sebgd.com/"), "https://shift.sebgd.com/");
+  assert.equal(projectEmbedUrl("https://luum.io/luumi"), "https://luum.io/luumi");
+  for (const url of ["https://pod.sebgd.com/", "https://finaldraftpod.com/", "https://dojo.sebgd.com/", "https://wires.sebgd.com/", "http://example.com/", "javascript:alert(1)"]) assert.equal(projectEmbedUrl(url), null);
+  assert.equal(projectEmbedUrl("https://shift.sebgd.com/", false), null);
 });
 
 test("thought grids omit subject lines and expose draft starters only in the local preview", async () => {
