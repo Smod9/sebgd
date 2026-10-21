@@ -39,10 +39,10 @@ export const PROJECT_PREVIEW: ProjectCard[] = [
   },
   {
     id: "preview-luum",
-    title: "Luum",
+    title: "Luum.io",
     description: "Power, lighting, and controls. Hardware and software built together.",
     href: "https://luum.io",
-    cover: "/projects/luum.png",
+    cover: "https://luum.io/opengraph-image",
     tags: ["Ongoing", "Hardware & software"],
   },
   {

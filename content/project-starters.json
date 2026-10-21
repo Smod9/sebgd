@@ -3,12 +3,13 @@
     "slug": "luumi",
     "title": "Luumi",
     "summary": "A tiny animated Mac cat that can chat, remember context, and help with Notes, Calendar, and Music when asked.",
-    "body": "An animated native Mac assistant, embodied as a small, slightly sassy cat.\n\nLuumi can use an AI gateway or local Ollama, with explicit actions for Notes, Calendar, and Music.",
+    "body": "An adorable animated native Mac assistant. Just a small, slightly sassy cat.\n\nLuumi can use an AI gateway or local Ollama, with explicit actions for Notes, Calendar, and Music.\n\nBut mostly i just like how she sits in the way of everything and purrs when i pick her up to move her.",
     "tags": ["AI", "macOS"],
     "group": "software",
-    "cover": "/projects/luumi.svg",
+    "cover": "https://luum.io/luumi/opengraph-image",
     "position": 1,
-    "review_notes": "Uses the public Luumi character artwork. No download link supplied; release availability and notarization have not been independently checked."
+    "review_notes": "Uses Luumi’s official website and social card supplied by Sebastien.",
+    "demo_url": "https://luum.io/luumi"
   },
   {
     "slug": "magic-words",

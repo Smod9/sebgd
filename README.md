@@ -70,7 +70,10 @@ in the project editor; older projects infer a group from their categories.
 Open `/write` and unlock the existing admin with `SEBGD_ADMIN_TOKEN`.
 
 - Choose **Project**. Add a title, short description, categories, a project group, optional demo
-  and repository URLs, an optional Instagram link, and details. Upload a cover or paste its URL. Without a
+  and repository URLs, an optional Instagram link, and details. For a project with its own website,
+  use that page’s official Open Graph social image (`og:image`) as the cover by default;
+  prefer the project page’s card over a generic company card. Verify it loads and paste its URL
+  into the cover field. Use an uploaded image when there is no official social card. Without a
   cover, `/api/social-card/<slug>` generates a 1200 × 630 PNG automatically.
   Save a draft or publish; published projects appear on the homepage and Projects.
   Project pages include demo/source links and social-sharing image metadata.
