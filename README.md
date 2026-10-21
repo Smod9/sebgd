@@ -76,7 +76,10 @@ Open `/write` and unlock the existing admin with `SEBGD_ADMIN_TOKEN`.
   into the cover field. Use an uploaded image when there is no official social card. Without a
   cover, `/api/social-card/<slug>` generates a 1200 × 630 PNG automatically.
   Save a draft or publish; published projects appear on the homepage and Projects.
-  Project pages lead with a large cover preview, a short description, and website/source links.
+  Project pages embed the linked website as an interactive live preview, alongside a short
+  description and website/source links. The social-card image stays in the gallery and is
+  available through **Show image**. Known framing-blocked sites and sign-in-only apps keep
+  their image preview and open separately; set `meta.embed_preview` to `false` to opt out.
   Add **What I learned** to capture surprises, firsts, or what you would do differently;
   it supports Markdown and appears as its own section only when filled in.
 - Choose **Thought · 140 characters**. Write the thought without a title; the
