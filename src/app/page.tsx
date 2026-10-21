@@ -29,7 +29,7 @@ export default async function HomePage({
       <section className="hero" aria-labelledby="intro-title">
         <h1 className="hero-headline" id="intro-title">I can’t not make things.</h1>
         <p className="hero-support">
-          Dad of 3. Sailor. Pilot. Builder of things that need building (or at least things I like the idea of).
+          Dad of 3. Sailor. Pilot. Builder of things.
         </p>
         <p className="hero-location">Built in the Gulf Islands, BC.</p>
         <a href="#projects" className="hero-project-link">Explore the projects <span aria-hidden="true">↓</span></a>
