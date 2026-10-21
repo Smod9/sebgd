@@ -1,7 +1,7 @@
 import { createHash, randomUUID } from "node:crypto";
 import { mkdir, readFile, readdir, rename, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { BlobPreconditionFailedError, del, get, list, put } from "@vercel/blob";
+import { BlobNotFoundError, BlobPreconditionFailedError, del, get, head, list, put } from "@vercel/blob";
 import { SiteError } from "./rules";
 
 // A separate local store lets development/tests run without touching production Blob.
@@ -14,9 +14,28 @@ export async function readObject(key: string, fresh = false): Promise<{ body: Ui
     try { const body = await readFile(path.join(root, key)); return { body, etag: etag(body) }; }
     catch (error) { if ((error as NodeJS.ErrnoException).code === "ENOENT") return null; throw error; }
   }
-  const result = await get(key, { access: "public", useCache: !fresh });
-  if (!result || result.statusCode !== 200) return null;
-  return { body: new Uint8Array(await new Response(result.stream).arrayBuffer()), etag: result.blob.etag };
+  for (let attempt = 0; attempt < (fresh ? 3 : 1); attempt++) {
+    let target = key;
+    let expected: string | undefined;
+    if (fresh) {
+      // useCache:false bypasses the CDN only for PRIVATE stores in this SDK.
+      // The metadata API reads the latest ETag; versioning the public URL keeps
+      // mutable manifests out of stale CDN entries, including cached 404s.
+      let metadata;
+      try { metadata = await head(key); }
+      catch (error) { if (error instanceof BlobNotFoundError) return null; throw error; }
+      expected = metadata.etag;
+      const url = new URL(metadata.url);
+      url.searchParams.set("v", expected);
+      target = url.toString();
+    }
+    const result = await get(target, { access: "public" });
+    if (!result || result.statusCode !== 200) { if (fresh) continue; return null; }
+    // If a writer raced the metadata read, resolve the latest version again.
+    if (expected && result.blob.etag !== expected) { await result.stream.cancel(); continue; }
+    return { body: new Uint8Array(await new Response(result.stream).arrayBuffer()), etag: result.blob.etag };
+  }
+  throw new SiteError("Site publication is changing. Reload before trying again.", 503);
 }
 
 export async function writeObject(key: string, body: Uint8Array | string, type: string, expected?: string) {
@@ -39,7 +58,7 @@ export async function writeObject(key: string, body: Uint8Array | string, type: 
   try {
     await put(key, typeof body === "string" ? body : Buffer.from(body), { access: "public", addRandomSuffix: false, contentType: type, cacheControlMaxAge: 60, ...(expected ? { ifMatch: expected } : { allowOverwrite: false }) });
   } catch (error) {
-    if (error instanceof BlobPreconditionFailedError || (error instanceof Error && /already exists/i.test(error.message))) {
+    if (error instanceof BlobPreconditionFailedError || (error instanceof Error && /already exists|conditional request.*conflicting operation/i.test(error.message))) {
       throw new SiteError("Site changed. Reload before trying again.", 409);
     }
     throw error;

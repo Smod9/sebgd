@@ -205,6 +205,10 @@ Verification: build first, then `node --test tests/static-hosting.test.mjs`.
 The integration suite starts an isolated local server/store and checks publication,
 binary assets, directory/SPA routes, authorization, origin isolation, revision
 conflicts, concurrent updates, and unpublishing without touching production storage.
+`node --test tests/static-storage.test.mjs` covers the public Blob adapter's
+versioned manifest reads and conflicting-operation responses. Manifests use the
+metadata API's current ETag in their fetch URL; public Blob's default CDN URL can
+otherwise serve an old revision after a replacement or unpublish.
 
 ## MCP
 
