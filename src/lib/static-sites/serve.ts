@@ -1,4 +1,4 @@
-import { resolveSitePath, validateRequestPath } from "@/lib/static-sites/rules";
+import { resolveSitePath, SITE_DOMAIN, validateRequestPath } from "@/lib/static-sites/rules";
 import { readSite } from "@/lib/static-sites/store";
 import { readObject } from "@/lib/static-sites/storage";
 
@@ -33,7 +33,7 @@ export async function serveSite(request: Request, name: string, pathname: string
       "Origin-Agent-Cluster": "?1",
       "Referrer-Policy": "strict-origin-when-cross-origin",
       "ETag": `"${site.revision}-${encodeURIComponent(file.path)}"`,
-      "Content-Security-Policy": "frame-ancestors 'self'; object-src 'none'; base-uri 'self'",
+      "Content-Security-Policy": `frame-ancestors 'self' https://${SITE_DOMAIN} https://www.${SITE_DOMAIN}; object-src 'none'; base-uri 'self'`,
       "X-Sebgd-Site-Revision": site.revision,
     };
     if (request.headers.get("if-none-match") === headers.ETag) return new Response(null, { status: 304, headers });

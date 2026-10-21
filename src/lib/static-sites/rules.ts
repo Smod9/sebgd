@@ -6,7 +6,7 @@ export const SITE_DOMAIN = "sebgd.com";
 const RESERVED = new Set([
   "www", "admin", "api", "mail", "email", "smtp", "ftp", "ns1", "ns2",
   "autodiscover", "autoconfig", "localhost", "schem", "sls", "bv",
-  ...projectDomains.map((domain) => domain.hostname.split(".")[0]),
+  ...projectDomains.filter((domain) => domain.mode !== "static").map((domain) => domain.hostname.split(".")[0]),
 ]);
 
 export class SiteError extends Error {
@@ -32,7 +32,7 @@ export function hostedSiteName(host: string): string | null {
   const name = host.slice(0, -suffix.length);
   if (name === "www" && suffix === `.${SITE_DOMAIN}`) return null;
   // Redirects and native aliases are handled by their existing projects/config.
-  if (projectDomains.some((domain) => domain.hostname === host) || ["schem", "sls", "bv"].includes(name)) return null;
+  if (projectDomains.some((domain) => domain.hostname === host && domain.mode !== "static") || ["schem", "sls", "bv"].includes(name)) return null;
   return name;
 }
 

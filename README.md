@@ -108,8 +108,12 @@ of posting dates, including Luumi in the second slot. Requested site changes now
 ship live after practical checks and public verification, per Seb's preference.
 
 Project subdomains are recorded in `content/project-domains.json`. Seven are native
-aliases on their existing Vercel projects; `shift.sebgd.com` and `cat.sebgd.com` use
-host-specific 307 redirects to Read the Shift and Luumi's official landing page.
+aliases on their existing Vercel projects. `shift.sebgd.com` serves Read the Shift
+through the static publisher, and `cat.sebgd.com` redirects to Luumi's official
+landing page. The recovered sailing visualization is kept in
+`static-sites/read-the-shift/`; see `static-sites/README.md` for provenance and
+republishing. A `static` domain record routes through the publisher and can be
+updated with the admin tools; native aliases and redirect names remain reserved.
 Vercel manages sebgd.com
 DNS and its existing wildcard record. The older `schem.sebgd.com` alias remains valid.
 Update the matching published project's `meta.demo_url` only after the new hostname
@@ -173,7 +177,7 @@ extensionless client-side paths. Missing assets still return `404`.
 The publisher reuses `SEBGD_ADMIN_TOKEN` and the existing public Vercel Blob store;
 no Vercel API token is needed by the application. Attach `*.sebgd.com` to the
 `sebgd` Vercel project, with Vercel DNS/nameservers. Exact app aliases remain on
-their own projects. Existing names in `content/project-domains.json`, plus `schem`,
+their own projects. Non-static names in `content/project-domains.json`, plus `schem`,
 `sls`, `bv`, `www`, and administrative/mail names are reserved. Add future app
 aliases to the reservation list before using them elsewhere.
 
@@ -194,6 +198,8 @@ for tests. Local hosted URLs use `<name>.localhost:<port>` (or a matching Host
 header). The main site blocks direct `/hosted/*` access, so uploaded HTML cannot
 run on its admin origin. Every request on a hosted subdomain stays inside that
 site, including `/admin` and `/api` paths.
+Hosted pages allow framing by the sebgd.com portfolio and www.sebgd.com so live
+project previews work; other external parents remain blocked.
 
 Admin endpoints (existing Bearer authentication):
 
