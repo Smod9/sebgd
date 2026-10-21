@@ -4,7 +4,10 @@
     "title": "Luumi",
     "summary": "A tiny animated Mac cat that can chat, remember context, and help with Notes, Calendar, and Music when asked.",
     "body": "An adorable animated native Mac assistant. Just a small, slightly sassy cat.\n\nLuumi can use an AI gateway or local Ollama, with explicit actions for Notes, Calendar, and Music.\n\nBut mostly i just like how she sits in the way of everything and purrs when i pick her up to move her.",
-    "tags": ["AI", "macOS"],
+    "tags": [
+      "AI",
+      "macOS"
+    ],
     "group": "software",
     "cover": "https://luum.io/luumi/opengraph-image",
     "position": 1,
@@ -16,10 +19,13 @@
     "title": "Magic Words",
     "summary": "A poetry playground where kids write a poem and watch the words come alive.",
     "body": "A children's poetry toy with animated words, a poem theater, and retro computer themes.",
-    "tags": ["Software", "Poetry"],
+    "tags": [
+      "Software",
+      "Poetry"
+    ],
     "group": "software",
     "cover": "/projects/magic-words.png",
-    "demo_url": "https://artpoem.ca/",
+    "demo_url": "https://poems.sebgd.com/",
     "review_notes": "Existing project social card and documented website URL. The current live site has not been checked."
   },
   {
@@ -27,19 +33,26 @@
     "title": "Free Rangers",
     "summary": "A local food-shop app for browsing produce, building a basket, and repeating last week's order.",
     "body": "A progressive web app for a local food shop, with product browsing, baskets, and repeat orders.",
-    "tags": ["Software", "Local food"],
+    "tags": [
+      "Software",
+      "Local food"
+    ],
     "group": "software",
     "cover": "/projects/free-rangers.svg",
-    "review_notes": "Public app icon only; no customer data or owner screens. No verified public website URL."
+    "review_notes": "Public app icon only; no customer data or owner screens. No verified public website URL.",
+    "demo_url": "https://food.sebgd.com/"
   },
   {
     "slug": "read-the-shift",
     "title": "Read the Shift",
     "summary": "An interactive sailing visualization for making sense of wind shifts.",
     "body": "A visual way to explore sailing wind shifts and see how the changing wind affects the picture on the water.",
-    "tags": ["Software", "Sailing"],
+    "tags": [
+      "Software",
+      "Sailing"
+    ],
     "group": "software",
-    "demo_url": "https://read-the-shift-sailing.sebgd.chatgpt.site",
+    "demo_url": "https://shift.sebgd.com/",
     "asset_needed": true,
     "review_notes": "Needs a real screenshot of the selected Read the Shift visualization. Public Site version 3 was verified in the source research; interaction testing has not been repeated. This is not Race Around the Rock."
   },
@@ -48,7 +61,10 @@
     "title": "Salt Wind",
     "summary": "A 3D-printed model ship, from the hull and rigging to the tiny dinghies.",
     "body": "A printed model ship, separate from Bon Vivant. The main single-filament print turned out well; the tiny dinghies sank.\n\nThe main model's flotation is still unverified, and the B variant is for display.",
-    "tags": ["3D printing", "Model ship"],
+    "tags": [
+      "3D printing",
+      "Model ship"
+    ],
     "group": "other",
     "asset_needed": true,
     "review_notes": "Needs a photo of the actual finished print. Avoid using an earlier model rendering as a photograph or claiming it is a proven floating toy."
@@ -58,7 +74,10 @@
     "title": "Grater repair",
     "summary": "A replacement handle for my wife's grandmother's grater. Repairing something worth keeping.",
     "body": "A replacement handle to repair my wife's grandmother's grater instead of replacing it.",
-    "tags": ["3D printing", "Repair"],
+    "tags": [
+      "3D printing",
+      "Repair"
+    ],
     "group": "other",
     "asset_needed": true,
     "review_notes": "Needs a photo of the repaired grater or the correct final v04 handle. The intermediate visual predates the final revision."
@@ -68,11 +87,14 @@
     "title": "Hotfoot Sailing",
     "summary": "A home for the Hotfoot fleet: boats, photographs, race reports, and events.",
     "body": "A sailing community website with a fleet registry, photographs, race reports, and an event board.",
-    "tags": ["Software", "Sailing"],
+    "tags": [
+      "Software",
+      "Sailing"
+    ],
     "group": "software",
     "cover": "/projects/hotfoot-sailing.jpg",
     "cover_position": "center 85%",
-    "demo_url": "https://hotfootsailing.com/",
+    "demo_url": "https://fleet.sebgd.com/",
     "review_notes": "Uses an existing public fleet photograph. The documented website URL has not been live-checked; no private submissions or contact data included."
   },
   {
@@ -80,7 +102,10 @@
     "title": "Seb x Seb",
     "summary": "An experimental interview studio where an AI voice clone interviews me.",
     "body": "A local experiment in interviewing myself: an AI voice clone asks questions, and the real Seb answers.",
-    "tags": ["AI", "Prototype"],
+    "tags": [
+      "AI",
+      "Prototype"
+    ],
     "group": "software",
     "asset_needed": true,
     "review_notes": "Needs a sanitized studio screenshot. No private recordings, voice uploads, or audio samples. Microphone/listening validation remains pending in the project README; no public demo URL."
@@ -90,7 +115,10 @@
     "title": "Fibonacci hexagrams",
     "summary": "Visual experiments with Fibonacci sequences, nested hexagrams, and patterns in modular arithmetic.",
     "body": "Computational visualizations of Fibonacci sequences and nested hexagrams. An exploration of mathematical patterns, rather than a claim of peer-reviewed proof.",
-    "tags": ["Mathematics", "Visualization"],
+    "tags": [
+      "Mathematics",
+      "Visualization"
+    ],
     "group": "other",
     "cover": "/projects/fibonacci-hexagrams.png",
     "cover_position": "center top",
@@ -101,7 +129,10 @@
     "title": "Osmosis in 3D",
     "summary": "An interactive 3D explainer for exploring osmosis, particles, and membranes.",
     "body": "An interactive explainer for visualizing osmosis in three dimensions. Particle sizes and reservoir behavior are illustrative.",
-    "tags": ["Science", "Visualization"],
+    "tags": [
+      "Science",
+      "Visualization"
+    ],
     "group": "software",
     "asset_needed": true,
     "review_notes": "Needs recovery of the original osmosis-in-3d.html and a real screenshot. No recovered demo or public demo URL yet."
@@ -111,7 +142,10 @@
     "title": "BKR straw lid",
     "summary": "A 3D-printed straw lid, shaped around an existing bottle's threads and straw.",
     "body": "A replacement straw lid designed around an existing bottle. The original thread and straw fit worked well.\n\nThe later carry-loop and skirt revision is still a prototype.",
-    "tags": ["3D printing", "Prototype"],
+    "tags": [
+      "3D printing",
+      "Prototype"
+    ],
     "group": "other",
     "asset_needed": true,
     "review_notes": "Needs the correct v04 preview or an actual print photo. Carrying strength and sealing have not been tested."
