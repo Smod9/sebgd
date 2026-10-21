@@ -1,0 +1,10 @@
+[
+  { "slug": "letters-and-marbles", "hostname": "marbles.sebgd.com", "destination": "https://letters-and-marbles.vercel.app", "mode": "native", "hostingProject": "letters-and-marbles" },
+  { "slug": "articulation-dojo", "hostname": "dojo.sebgd.com", "destination": "https://articulation-dojo.vercel.app", "mode": "native", "hostingProject": "articulation-dojo" },
+  { "slug": "magic-words", "hostname": "poems.sebgd.com", "destination": "https://artpoem.ca", "mode": "native", "hostingProject": "art-poetry" },
+  { "slug": "free-rangers", "hostname": "food.sebgd.com", "destination": "https://free-rangers.vercel.app", "mode": "native", "hostingProject": "free-rangers" },
+  { "slug": "schematic-maker", "hostname": "wires.sebgd.com", "destination": "https://schematic-maker-gamma.vercel.app", "mode": "native", "hostingProject": "schematic-maker" },
+  { "slug": "hotfoot-sailing", "hostname": "fleet.sebgd.com", "destination": "https://hotfootsailing.com", "mode": "native", "hostingProject": "horizonsailing" },
+  { "slug": "final-draft", "hostname": "pod.sebgd.com", "destination": "https://finaldraftpod.com", "mode": "native", "hostingProject": "final-draft-podcast" },
+  { "slug": "read-the-shift", "hostname": "shift.sebgd.com", "destination": "https://read-the-shift-sailing.sebgd.chatgpt.site", "mode": "redirect", "hostingProject": "sebgd" }
+]
