@@ -7,9 +7,10 @@ import { NAV } from "@/lib/site";
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const compact = pathname.startsWith("/work/");
 
   return (
-    <header className="site-header">
+    <header className={`site-header${compact ? " site-header-compact" : ""}`}>
       <div className="site-header-inner">
         <Link href="/" className="brand-mark" aria-label="Sebastien Gouin-Davis home">
           <span className="profile-avatar">
@@ -18,7 +19,7 @@ export function SiteHeader() {
               alt=""
               width={1024}
               height={1536}
-              sizes="(max-width: 640px) 52px, 160px"
+              sizes={compact ? "(max-width: 640px) 48px, 64px" : "(max-width: 640px) 52px, 160px"}
               className="profile-image"
             />
           </span>

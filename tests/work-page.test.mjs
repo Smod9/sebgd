@@ -347,10 +347,10 @@ test("starter seeding creates 15 thoughts and three attributed podcast drafts, p
   } finally { rmSync(directory, { recursive: true, force: true }); }
 });
 
-test("selected project seeding adds 11 editable drafts once and preserves subsequent edits", () => {
+test("selected project seeding adds editable drafts once and preserves subsequent edits", () => {
   const items = JSON.parse(readFileSync(path.join(root, "content/project-starters.json"), "utf8"));
-  assert.equal(items.length, 11);
-  assert.equal(new Set(items.map((item) => item.slug)).size, 11);
+  assert.equal(items.length, 12);
+  assert.equal(new Set(items.map((item) => item.slug)).size, 12);
   assert.ok(!items.some((item) => /race around the rock/i.test(item.title)));
   const directory = mkdtempSync(path.join(tmpdir(), "sebgd-project-seeds-"));
   try {
@@ -389,7 +389,7 @@ test("project showcase merges editable drafts with six existing cards and keeps 
       await store.createPost({ slug: "secret-project", title: "Private unselected project", type: "work", status: "draft" });
       const showcase = source("lib/project-showcase.ts");
       let cards = await showcase.listProjectShowcase([]);
-      assert.equal(cards.length, 17);
+      assert.equal(cards.length, 18);
       assert.equal(cards[1].title, "Luumi");
       assert.ok(!cards.some((card) => /Private unselected|Race Around the Rock/.test(card.title)));
       const luumi = await store.getPost("luumi");

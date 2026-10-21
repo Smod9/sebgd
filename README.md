@@ -95,7 +95,7 @@ drafts, with no publication dates. Existing files and edits are never overwritte
 With `SEBGD_DESIGN_PREVIEW=1`, these drafts appear in the local thoughts grid
 with edit links and explicit draft labels. Production and RSS exclude them.
 The seeder never connects to a database or publishes content.
-`npm run seed:projects` adds the 11 selected showcase projects as editable local
+`npm run seed:projects` adds the 12 selected showcase projects as editable local
 Markdown drafts without changing existing entries. In the local design preview,
 these join the existing six cards, with Luumi second. Edit links open the normal
 project editor; preparation notes and missing-image flags stay in the local draft
