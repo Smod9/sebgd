@@ -6,5 +6,6 @@
   { "slug": "schematic-maker", "hostname": "wires.sebgd.com", "destination": "https://schematic-maker-gamma.vercel.app", "mode": "native", "hostingProject": "schematic-maker" },
   { "slug": "hotfoot-sailing", "hostname": "fleet.sebgd.com", "destination": "https://hotfootsailing.com", "mode": "native", "hostingProject": "horizonsailing" },
   { "slug": "final-draft", "hostname": "pod.sebgd.com", "destination": "https://finaldraftpod.com", "mode": "native", "hostingProject": "final-draft-podcast" },
-  { "slug": "read-the-shift", "hostname": "shift.sebgd.com", "destination": "https://read-the-shift-sailing.sebgd.chatgpt.site", "mode": "redirect", "hostingProject": "sebgd" }
+  { "slug": "read-the-shift", "hostname": "shift.sebgd.com", "destination": "https://read-the-shift-sailing.sebgd.chatgpt.site", "mode": "redirect", "hostingProject": "sebgd" },
+  { "slug": "luumi", "hostname": "cat.sebgd.com", "destination": "https://luum.io/luumi", "mode": "redirect", "hostingProject": "sebgd" }
 ]

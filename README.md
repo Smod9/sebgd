@@ -101,8 +101,9 @@ of posting dates, including Luumi in the second slot. Requested site changes now
 ship live after practical checks and public verification, per Seb's preference.
 
 Project subdomains are recorded in `content/project-domains.json`. Seven are native
-aliases on their existing Vercel projects; `shift.sebgd.com` is a host-specific 307
-redirect configured here to the public Read the Shift Site. Vercel manages sebgd.com
+aliases on their existing Vercel projects; `shift.sebgd.com` and `cat.sebgd.com` use
+host-specific 307 redirects to Read the Shift and Luumi's official landing page.
+Vercel manages sebgd.com
 DNS and its existing wildcard record. The older `schem.sebgd.com` alias remains valid.
 Update the matching published project's `meta.demo_url` only after the new hostname
 passes public HTTPS checks. Desktop/physical projects and unrecovered or private
