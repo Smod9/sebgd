@@ -7,24 +7,40 @@ import { SiteError } from "./rules";
 // A separate local store lets development/tests run without touching production Blob.
 const localRoot = () => process.env.SEBGD_STATIC_LOCAL_DIR || (!process.env.VERCEL && !process.env.BLOB_READ_WRITE_TOKEN ? path.join(process.cwd(), ".local/static-sites") : null);
 const etag = (body: Uint8Array) => `"${createHash("sha256").update(body).digest("hex")}"`;
+const revisionPattern = "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}";
+const immutableManifest = (key: string, revision: string) => key.replace("/manifests/", "/revisions/").replace(/\.json$/, `/${revision}.json`);
 
 export async function readObject(key: string, fresh = false): Promise<{ body: Uint8Array; etag: string } | null> {
   const root = localRoot();
   if (root) {
-    try { const body = await readFile(path.join(root, key)); return { body, etag: etag(body) }; }
+    try {
+      const pointer = await readFile(path.join(root, key));
+      const revision = pointer.toString();
+      const body = fresh && new RegExp(`^${revisionPattern}$`).test(revision) ? await readFile(path.join(root, immutableManifest(key, revision))) : pointer;
+      return { body, etag: etag(pointer) };
+    }
     catch (error) { if ((error as NodeJS.ErrnoException).code === "ENOENT") return null; throw error; }
   }
   for (let attempt = 0; attempt < (fresh ? 3 : 1); attempt++) {
     let target = key;
     let expected: string | undefined;
     if (fresh) {
-      // useCache:false bypasses the CDN only for PRIVATE stores in this SDK.
-      // The metadata API reads the latest ETag; versioning the public URL keeps
-      // mutable manifests out of stale CDN entries, including cached 404s.
+      // Public get() has no consistent-read option. Read the control-plane
+      // metadata to choose an immutable revision instead of a mutable CDN URL.
       let metadata;
       try { metadata = await head(key); }
       catch (error) { if (error instanceof BlobNotFoundError) return null; throw error; }
       expected = metadata.etag;
+      const revision = metadata.contentType.match(new RegExp(`^application/vnd\\.sebgd\\.site\\.(${revisionPattern})\\+json$`))?.[1];
+      if (revision) {
+        // The control-plane metadata is authoritative. The manifest itself has
+        // a never-overwritten pathname, so public CDN invalidation is irrelevant.
+        const object = await readObject(immutableManifest(key, revision));
+        if (!object) continue; // A newer publish may have removed this revision.
+        return { body: object.body, etag: expected };
+      }
+      // Compatibility with the first release's JSON pointer. Only accept a body
+      // whose ETag matches metadata. Its next publish migrates to immutable data.
       const url = new URL(metadata.url);
       url.searchParams.set("v", expected);
       target = url.toString();

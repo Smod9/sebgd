@@ -7,6 +7,16 @@ type StoredFile = { path: string; key: string; size: number; contentType: string
 export type SiteManifest = { name: string; revision: string; updatedAt: string; spa: boolean; published: boolean; files: StoredFile[] };
 export type SiteSummary = Omit<SiteManifest, "files"> & { url: string; fileCount: number; size: number };
 const manifestKey = (name: string) => `static-sites/manifests/${name}.json`;
+const revisionKey = (name: string, revision: string) => `static-sites/revisions/${name}/${revision}.json`;
+
+async function writeSite(site: SiteManifest, expected?: string) {
+  await writeObject(revisionKey(site.name, site.revision), JSON.stringify(site), "application/json");
+  // Store the active UUID in both the pointer body (unique ETag for CAS) and its
+  // MIME metadata (read through Blob's control plane, never its mutable CDN URL).
+  await writeObject(manifestKey(site.name), site.revision, `application/vnd.sebgd.site.${site.revision}+json`, expected);
+}
+
+const oldKeys = (site?: SiteManifest) => site ? [...site.files.map((file) => file.key), revisionKey(site.name, site.revision)] : [];
 
 export function summarize(site: SiteManifest): SiteSummary {
   const { files, ...rest } = site;
@@ -53,16 +63,16 @@ export async function publishSite(name: string, files: SiteFile[], revision: str
       stored.push({ path: file.path, key, size: file.body.byteLength, contentType: type });
     }
     const site: SiteManifest = { name, revision: nextRevision, updatedAt: new Date().toISOString(), spa, published: true, files: stored };
-    await writeObject(manifestKey(name), JSON.stringify(site), "application/json", current?.etag);
+    await writeSite(site, current?.etag);
     // Publication has succeeded. Cleanup must never turn it into a failed request.
-    await deleteObjects(current?.site.files.map((file) => file.key) ?? []).catch((error) => console.error("Old static-site files could not be removed", error));
+    await deleteObjects(oldKeys(current?.site)).catch((error) => console.error("Old static-site files could not be removed", error));
     return summarize(site);
   } catch (error) {
     // A transport error may have happened after the manifest was committed. Preserve
     // files if we cannot establish that publication failed.
     const latest = await readSite(name).catch(() => undefined);
     if (latest !== undefined && latest?.site.revision !== nextRevision) {
-      await deleteObjects(stored.map((file) => file.key)).catch(() => {});
+      await deleteObjects([...stored.map((file) => file.key), revisionKey(name, nextRevision)]).catch(() => {});
     }
     if (latest?.site.revision === nextRevision) return summarize(latest.site);
     throw error;
@@ -75,7 +85,7 @@ export async function unpublishSite(name: string, revision: string) {
   checkRevision(current, revision);
   // Keep a tombstone so a stale publisher cannot recreate an unpublished site.
   const site: SiteManifest = { ...current.site, revision: randomUUID(), updatedAt: new Date().toISOString(), published: false, files: [] };
-  await writeObject(manifestKey(name), JSON.stringify(site), "application/json", current.etag);
-  await deleteObjects(current.site.files.map((file) => file.key)).catch((error) => console.error("Unpublished static-site files could not be removed", error));
+  await writeSite(site, current.etag);
+  await deleteObjects(oldKeys(current.site)).catch((error) => console.error("Unpublished static-site files could not be removed", error));
   return summarize(site);
 }

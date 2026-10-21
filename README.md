@@ -209,9 +209,12 @@ The integration suite starts an isolated local server/store and checks publicati
 binary assets, directory/SPA routes, authorization, origin isolation, revision
 conflicts, concurrent updates, and unpublishing without touching production storage.
 `node --test tests/static-storage.test.mjs` covers the public Blob adapter's
-versioned manifest reads and conflicting-operation responses. Manifests use the
-metadata API's current ETag in their fetch URL; public Blob's default CDN URL can
-otherwise serve an old revision after a replacement or unpublish.
+metadata pointers, immutable manifest reads, and conflicting-operation responses.
+The active revision UUID lives in the pointer's MIME metadata, read through Blob's
+metadata API; the pointer body gives every revision a unique ETag for conditional
+writes. Published manifests have immutable UUID paths. Mutable public CDN content
+is never used to decide which revision is live. The original JSON-pointer format
+is read for compatibility and migrates automatically on its next publication.
 
 ## MCP
 
