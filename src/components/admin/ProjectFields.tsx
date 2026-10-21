@@ -1,6 +1,6 @@
 "use client";
 
-export type ProjectFieldsValue = { summary: string; demoUrl: string; repoUrl: string; tags: string; group: string };
+export type ProjectFieldsValue = { summary: string; demoUrl: string; repoUrl: string; tags: string; group: string; instagramUrl: string };
 
 export function ProjectFields({ value, onChange }: { value: ProjectFieldsValue; onChange: (value: ProjectFieldsValue) => void }) {
   const field = (key: keyof ProjectFieldsValue, text: string) => onChange({ ...value, [key]: text });
@@ -14,6 +14,9 @@ export function ProjectFields({ value, onChange }: { value: ProjectFieldsValue; 
       </label>
       <label className="admin-label">Repository URL (optional)
         <input className="admin-input" type="url" value={value.repoUrl} onChange={(e) => field("repoUrl", e.target.value)} placeholder="https://github.com/…" />
+      </label>
+      <label className="admin-label admin-span-2">Instagram URL (optional)
+        <input className="admin-input" type="url" value={value.instagramUrl} onChange={(e) => field("instagramUrl", e.target.value)} placeholder="https://www.instagram.com/…" />
       </label>
       <label className="admin-label admin-span-2">Categories (comma-separated)
         <input className="admin-input" value={value.tags} onChange={(e) => field("tags", e.target.value)} placeholder="Software, Hardware, Learning…" />

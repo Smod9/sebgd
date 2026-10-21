@@ -574,3 +574,7 @@ button, input, textarea, select { font: inherit; }
 .project-no-results { padding: 32px 0 48px; color: var(--color-muted); font-size: 14px; }
 .project-no-results button { border: 0; padding: 0; background: none; text-decoration: underline; cursor: pointer; }
 @media (max-width: 640px) { .project-tools { align-items: flex-start; } .project-filters { gap: 18px; } .project-search, .project-search input { width: 100%; } }
+
+.project-card { display: flex; flex-direction: column; }
+.project-link { height: auto; }
+.project-social { align-self: flex-start; margin-top: 12px; color: var(--color-muted); font-size: 12px; text-decoration: none; }

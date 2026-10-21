@@ -1,3 +1,4 @@
+import { projectUrl } from "@/lib/publishing";
 import { projectGroup, type ProjectGroup } from "@/lib/project-filters";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,6 +12,7 @@ export type ProjectCard = {
   cover?: string | null;
   tags: string[];
   group?: ProjectGroup;
+  instagramUrl?: string | null;
 };
 
 export function projectFromPost(post: Post): ProjectCard {
@@ -22,6 +24,7 @@ export function projectFromPost(post: Post): ProjectCard {
     cover: post.cover_blob_url || `/api/social-card/${encodeURIComponent(post.slug)}`,
     tags: post.tags,
     group: projectGroup(post.tags, post.meta.group),
+    instagramUrl: projectUrl(post.meta.instagram_url),
   };
 }
 
@@ -58,6 +61,7 @@ export function ProjectGrid({ projects }: { projects: ProjectCard[] }) {
               {project.description ? <p className="project-description">{project.description}</p> : null}
             </div>
           </Link>
+          {projectUrl(project.instagramUrl) ? <a href={projectUrl(project.instagramUrl)!} className="project-social" target="_blank" rel="noopener noreferrer" aria-label={`${project.title} on Instagram`}>Instagram ↗</a> : null}
         </article>
       ))}
     </div>

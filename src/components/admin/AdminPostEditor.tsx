@@ -43,7 +43,7 @@ export function AdminPostEditor({ id }: { id: string }) {
   const [tags, setTags] = useState("");
   const [coverUrl, setCoverUrl] = useState("");
   const [ideaDate, setIdeaDate] = useState("");
-  const [project, setProject] = useState<ProjectFieldsValue>({ summary: "", demoUrl: "", repoUrl: "", tags: "", group: "" });
+  const [project, setProject] = useState<ProjectFieldsValue>({ summary: "", demoUrl: "", repoUrl: "", tags: "", group: "", instagramUrl: "" });
 
   useEffect(() => {
     let active = true;
@@ -59,7 +59,7 @@ export function AdminPostEditor({ id }: { id: string }) {
       setTags(next.tags.join(", "));
       setCoverUrl(next.cover_blob_url ?? "");
       setIdeaDate(typeof next.meta.idea_date === "string" ? next.meta.idea_date : "");
-      setProject({ summary: String(next.meta.summary ?? ""), demoUrl: String(next.meta.demo_url ?? ""), repoUrl: String(next.meta.repo_url ?? ""), tags: next.tags.join(", "), group: String(next.meta.group ?? "") });
+      setProject({ summary: String(next.meta.summary ?? ""), demoUrl: String(next.meta.demo_url ?? ""), repoUrl: String(next.meta.repo_url ?? ""), tags: next.tags.join(", "), group: String(next.meta.group ?? ""), instagramUrl: String(next.meta.instagram_url ?? "") });
     }).catch((err) => {
       if (!active) return;
       setError(err instanceof Error ? err.message : "Failed to load post");
@@ -80,7 +80,7 @@ export function AdminPostEditor({ id }: { id: string }) {
               slug: slug.trim(),
               body,
               status: patch?.action === "publish" ? "published" as const : patch?.status ?? status,
-              meta: type === "work" ? { ...post.meta, summary: project.summary.trim(), demo_url: project.demoUrl.trim(), repo_url: project.repoUrl.trim(), group: project.group } : type === "note" && post.meta.format === "thought" ? { ...post.meta, idea_date: ideaDate || null, idea_date_approximate: Boolean(ideaDate) } : post.meta,
+              meta: type === "work" ? { ...post.meta, summary: project.summary.trim(), demo_url: project.demoUrl.trim(), repo_url: project.repoUrl.trim(), group: project.group, instagram_url: project.instagramUrl.trim() } : type === "note" && post.meta.format === "thought" ? { ...post.meta, idea_date: ideaDate || null, idea_date_approximate: Boolean(ideaDate) } : post.meta,
               tags: (type === "work" ? project.tags : tags)
                 .split(",")
                 .map((t) => t.trim())

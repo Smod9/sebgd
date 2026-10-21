@@ -61,6 +61,7 @@ export default async function WorkDetailPage({ params }: Props) {
       </PageIntro>
       {post ? <div className="cta-group project-detail-links">
         {projectUrl(post.meta.demo_url) ? <a href={projectUrl(post.meta.demo_url)!} className="btn btn-primary" target="_blank" rel="noopener noreferrer">Open project ↗</a> : null}
+        {projectUrl(post.meta.instagram_url) ? <a href={projectUrl(post.meta.instagram_url)!} className="btn btn-secondary" target="_blank" rel="noopener noreferrer">Instagram ↗</a> : null}
         {projectUrl(post.meta.repo_url) ? <a href={projectUrl(post.meta.repo_url)!} className="btn btn-secondary" target="_blank" rel="noopener noreferrer">Source code ↗</a> : null}
       </div> : null}
       <div className="body-html" dangerouslySetInnerHTML={{ __html: html }} />

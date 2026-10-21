@@ -22,7 +22,7 @@ export function validatePostContent(input: Pick<PostInput, "type" | "body" | "me
     if (characterCount(input.body.trim()) > THOUGHT_LIMIT) throw new Error("Thoughts are limited to 140 characters.");
   }
   if (input.type === "work") {
-    for (const key of ["demo_url", "repo_url"]) {
+    for (const key of ["demo_url", "repo_url", "instagram_url"]) {
       if (input.meta?.[key] && !projectUrl(input.meta[key])) throw new Error("Project links must be valid http or https URLs.");
     }
   }

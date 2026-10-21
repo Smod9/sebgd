@@ -443,3 +443,21 @@ test("project filters combine groups and case-insensitive search across titles, 
   assert.deepEqual(filterProjects(cards, "elements", "all").map((card) => card.id), ["print"]);
   assert.equal(filterProjects(cards, "no match", "all").length, 0);
 });
+
+test("project Instagram links survive publishing and appear on cards and detail pages", async () => {
+  await withLocalStore(async (source) => {
+    const store = source("lib/posts.ts");
+    const instagram = "https://www.instagram.com/example_boat/";
+    const post = await store.createPost({ type: "work", slug: "boat-social", title: "The boat", body: "Boat projects.", status: "published", meta: { instagram_url: instagram } });
+    const { projectFromPost, ProjectGrid } = source("components/ProjectGrid.tsx");
+    const card = projectFromPost(post);
+    assert.equal(card.instagramUrl, instagram);
+    const grid = renderToStaticMarkup(ProjectGrid({ projects: [card] }));
+    assert.match(grid, /href="https:\/\/www.instagram.com\/example_boat\/"/);
+    assert.match(grid, /aria-label="The boat on Instagram"/);
+    const { default: Detail } = source("app/work/[slug]/page.tsx");
+    const detail = renderToStaticMarkup(await Detail({ params: Promise.resolve({ slug: post.slug }) }));
+    assert.match(detail, /href="https:\/\/www.instagram.com\/example_boat\/"/);
+    await assert.rejects(() => store.updatePost({ id: post.id }, { meta: { instagram_url: "javascript:alert(1)" } }), /http or https/);
+  });
+});
