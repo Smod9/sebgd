@@ -198,7 +198,7 @@ Admin endpoints (existing Bearer authentication):
 - `GET /api/admin/sites` — list sites and current revisions
 - `GET /api/admin/sites/<name>` — current site summary, or `site: null`
 - `PUT /api/admin/sites/<name>` — JSON `{ revision, spa?, files: [{ path, content_base64 }] }`, or multipart fields `revision`, `spa`, and `files` (filenames carry relative paths)
-- `DELETE /api/admin/sites/<name>` — unpublish; `If-Match` contains the current revision
+- `DELETE /api/admin/sites/<name>` — unpublish; `X-Sebgd-Site-Revision` contains the current revision
 
 Send `revision: null` only for a new name; send the current revision for replacements
 or republishing an offline site. After any conflict or uncertain response, read the

@@ -35,8 +35,8 @@ export async function DELETE(request: Request, { params }: Context) {
   try {
     const { name } = await params;
     validateSiteName(name);
-    const revision = request.headers.get("if-match");
-    if (!revision) throw new SiteError("Send the current revision in the If-Match header.");
+    const revision = request.headers.get("x-sebgd-site-revision");
+    if (!revision) throw new SiteError("Send the current revision in the X-Sebgd-Site-Revision header.");
     return Response.json({ site: await unpublishSite(name, revision) });
   } catch (error) { return siteError(error); }
 }

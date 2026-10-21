@@ -212,7 +212,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
       case "unpublish_site": {
         if (!TOKEN) throw new Error("SEBGD_ADMIN_TOKEN is not set");
-        const response = await fetch(`${SITE_URL}/api/admin/sites/${encodeURIComponent(args.name)}`, { method: "DELETE", headers: { Authorization: `Bearer ${TOKEN}`, "If-Match": String(args.revision) } });
+        const response = await fetch(`${SITE_URL}/api/admin/sites/${encodeURIComponent(args.name)}`, { method: "DELETE", headers: { Authorization: `Bearer ${TOKEN}`, "X-Sebgd-Site-Revision": String(args.revision) } });
         result = await response.json();
         if (!response.ok) throw new Error(result.error || "Could not unpublish site");
         break;

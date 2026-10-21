@@ -68,7 +68,7 @@ export function StaticSitesManager() {
     if (!window.confirm(`Take ${site.name}.sebgd.com offline? You can publish it again later.`)) return;
     setBusy(true); setError(null); setPublished(null);
     try {
-      const response = await fetch(`/api/admin/sites/${encodeURIComponent(site.name)}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}`, "If-Match": site.revision } });
+      const response = await fetch(`/api/admin/sites/${encodeURIComponent(site.name)}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}`, "X-Sebgd-Site-Revision": site.revision } });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "Could not unpublish site.");
       await reload();

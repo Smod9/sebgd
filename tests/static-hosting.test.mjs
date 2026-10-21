@@ -135,7 +135,7 @@ test("rejects stale updates and switches a complete revision with SPA routing", 
   assert.equal((await hosted("/missing.js", name, { Accept: "text/html" })).status, 404);
   assert.equal((await hosted("/client/route", name, { Accept: "application/json" })).status, 404);
   assert.equal((await api("PUT", name, { revision: oldRevision, files })).status, 409);
-  assert.equal((await api("DELETE", name, undefined, true, { "If-Match": oldRevision })).status, 409);
+  assert.equal((await api("DELETE", name, undefined, true, { "X-Sebgd-Site-Revision": oldRevision })).status, 409);
 });
 
 test("concurrent publishers cannot overwrite each other", async () => {
@@ -147,7 +147,7 @@ test("concurrent publishers cannot overwrite each other", async () => {
 });
 
 test("unpublishing removes the site and stale uploads cannot resurrect it", async () => {
-  const response = await api("DELETE", name, undefined, true, { "If-Match": revision });
+  const response = await api("DELETE", name, undefined, true, { "X-Sebgd-Site-Revision": revision });
   assert.equal(response.status, 200);
   const offline = (await response.json()).site;
   assert.equal(offline.published, false);
