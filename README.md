@@ -146,6 +146,69 @@ Checks: `node --test tests/work-page.test.mjs`, `npx tsc --noEmit`, and
 `npm run build`. Use `DATABASE_URL=''` for a build or preview against local
 Markdown content without accessing Neon.
 
+## Static sites on subdomains
+
+Open `/admin/sites` (also linked from `/admin`), choose a name, and upload a single
+HTML file or a finished static-site folder. A single HTML file becomes `index.html`;
+a folder must contain `index.html` at its root. The site is served at
+`https://<name>.sebgd.com`, with its own CSS, JavaScript, images, fonts, and nested
+pages. Uploads support up to 100 files and 3 MB total. Server code/build steps do
+not run on this hosting service. Upload finished output; hidden files, source maps,
+private-key/database files, symlinks (CLI), and unsupported file types are rejected.
+
+Publishing the same name replaces its complete file set. Files upload to immutable
+revision paths before a conditional manifest write switches the live site. Stale
+edits return `409` without changing the current publication. The old revision's
+files are then removed. Unpublish takes the subdomain offline and removes its files;
+the name remains in the admin list and can be published again. Uploaded content is
+public; this is not private file storage. A storage-cleanup failure is logged but
+does not reverse a successful publication/unpublish.
+
+Directory pages resolve `docs/index.html` at `/docs/`; `/about` can resolve
+`about.html`. Enable app routing to serve `index.html` for HTML navigations to
+extensionless client-side paths. Missing assets still return `404`.
+
+The publisher reuses `SEBGD_ADMIN_TOKEN` and the existing public Vercel Blob store;
+no Vercel API token is needed by the application. Attach `*.sebgd.com` to the
+`sebgd` Vercel project, with Vercel DNS/nameservers. Exact app aliases remain on
+their own projects. Existing names in `content/project-domains.json`, plus `schem`,
+`sls`, `bv`, `www`, and administrative/mail names are reserved. Add future app
+aliases to the reservation list before using them elsewhere.
+
+To publish from a terminal, set the existing `SEBGD_ADMIN_TOKEN` in your environment:
+
+```bash
+npm run publish:site -- --name my-build ./dist
+npm run publish:site -- --name my-tool ./tool.html
+npm run publish:site -- --name my-app ./dist --spa
+```
+
+`examples/static-site/` contains the four-file `hello.sebgd.com` sample.
+
+`SEBGD_SITE_URL` defaults to `https://sebgd.com`; use `http://localhost:3000` for
+local work. Without a Blob token outside Vercel, uploads use ignored
+`.local/static-sites/`. `SEBGD_STATIC_LOCAL_DIR` selects an isolated local store
+for tests. Local hosted URLs use `<name>.localhost:<port>` (or a matching Host
+header). The main site blocks direct `/hosted/*` access, so uploaded HTML cannot
+run on its admin origin. Every request on a hosted subdomain stays inside that
+site, including `/admin` and `/api` paths.
+
+Admin endpoints (existing Bearer authentication):
+
+- `GET /api/admin/sites` — list sites and current revisions
+- `GET /api/admin/sites/<name>` — current site summary, or `site: null`
+- `PUT /api/admin/sites/<name>` — JSON `{ revision, spa?, files: [{ path, content_base64 }] }`, or multipart fields `revision`, `spa`, and `files` (filenames carry relative paths)
+- `DELETE /api/admin/sites/<name>` — unpublish; `If-Match` contains the current revision
+
+Send `revision: null` only for a new name; send the current revision for replacements
+or republishing an offline site. After any conflict or uncertain response, read the
+current site before trying again. Never automatically retry a stale publication.
+
+Verification: build first, then `node --test tests/static-hosting.test.mjs`.
+The integration suite starts an isolated local server/store and checks publication,
+binary assets, directory/SPA routes, authorization, origin isolation, revision
+conflicts, concurrent updates, and unpublishing without touching production storage.
+
 ## MCP
 
 See [`mcp/README.md`](./mcp/README.md). Point Cursor at `mcp/src/index.mjs` with `SEBGD_SITE_URL` + `SEBGD_ADMIN_TOKEN`.

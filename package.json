@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "mcp": "node mcp/src/index.mjs",
+    "publish:site": "node scripts/publish-site.mjs",
     "seed": "node --env-file=.env.local scripts/seed.mjs",
     "seed:thoughts": "node scripts/seed-thoughts.mjs",
     "seed:projects": "node scripts/seed-projects.mjs"

@@ -388,6 +388,27 @@ button, input, textarea, select { font: inherit; }
   margin-top: 8px;
 }
 
+.static-sites-panel .admin-header h1 { max-width: 15ch; line-height: 1.06; }
+.static-sites-panel .admin-header > .btn { align-self: flex-start; }
+.static-domain-input { display: flex; align-items: center; border: 1px solid var(--color-border, #d9d9d9); border-radius: 8px; padding-right: 16px; overflow: hidden; }
+.static-domain-input .admin-input { border: 0; min-width: 0; }
+.static-domain-input > span { white-space: nowrap; font-weight: 600; }
+.static-upload-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 12px; margin-top: 8px; }
+.static-upload-choice { display: flex; flex-direction: column; gap: 10px; border: 1px dashed #aaa; border-radius: 10px; padding: 20px; min-width: 0; }
+.static-upload-choice input { max-width: 100%; font-size: 13px; }
+.static-spa-option { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 8px 0; }
+.static-publish-result { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 18px; border: 1px solid #8ea887; border-radius: 10px; margin: 24px 0; }
+.static-publish-result a { font-weight: 700; overflow-wrap: anywhere; }
+.static-list-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.static-site-list { list-style: none; padding: 0; }
+.static-site-list > li { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding: 20px 0; border-bottom: 1px solid #ddd; }
+.static-site-list a, .static-site-list strong { font-weight: 700; overflow-wrap: anywhere; }
+.static-site-list p { margin: 6px 0 0; }
+.static-file-list { border: 1px solid #ddd; border-radius: 8px; padding: 12px; }
+.static-file-list ul { list-style: none; padding: 0; max-height: 220px; overflow: auto; }
+.static-file-list li { display: flex; justify-content: space-between; gap: 16px; font-size: 12px; }
+.static-file-list code { overflow-wrap: anywhere; }
+
 .admin-error {
   margin: 0 0 12px;
   color: var(--color-accent-700);

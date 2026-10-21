@@ -55,6 +55,30 @@ const server = new Server(
 server.setRequestHandler(ListToolsRequestSchema, async () => ({
   tools: [
     {
+      name: "list_sites",
+      description: "List static sites, subdomain URLs, publication state, and current revisions.",
+      inputSchema: { type: "object", properties: {} },
+    },
+    {
+      name: "publish_site",
+      description: "Publish or replace a static site at name.sebgd.com. Requires index.html, up to 100 files and 3 MB total. First list_sites and use the current revision; null creates a new site. Reload on 409 before retrying.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          name: { type: "string" },
+          revision: { type: ["string", "null"] },
+          spa: { type: "boolean", default: false },
+          files: { type: "array", maxItems: 100, items: { type: "object", properties: { path: { type: "string" }, content_base64: { type: "string" } }, required: ["path", "content_base64"] } },
+        },
+        required: ["name", "revision", "files"],
+      },
+    },
+    {
+      name: "unpublish_site",
+      description: "Take a static subdomain offline. Requires the current revision from list_sites.",
+      inputSchema: { type: "object", properties: { name: { type: "string" }, revision: { type: "string" } }, required: ["name", "revision"] },
+    },
+    {
       name: "list_posts",
       description: "List posts (optionally filter by type/status).",
       inputSchema: {
@@ -178,6 +202,21 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
     let result;
     switch (name) {
+      case "list_sites":
+        result = await api("/api/admin/sites");
+        break;
+      case "publish_site": {
+        const { name: siteName, ...payload } = args;
+        result = await api(`/api/admin/sites/${encodeURIComponent(siteName)}`, { method: "PUT", body: payload });
+        break;
+      }
+      case "unpublish_site": {
+        if (!TOKEN) throw new Error("SEBGD_ADMIN_TOKEN is not set");
+        const response = await fetch(`${SITE_URL}/api/admin/sites/${encodeURIComponent(args.name)}`, { method: "DELETE", headers: { Authorization: `Bearer ${TOKEN}`, "If-Match": String(args.revision) } });
+        result = await response.json();
+        if (!response.ok) throw new Error(result.error || "Could not unpublish site");
+        break;
+      }
       case "list_posts": {
         const q = new URLSearchParams();
         if (args.type) q.set("type", String(args.type));

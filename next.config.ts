@@ -2,6 +2,8 @@ import type { NextConfig } from "next";
 import projectDomains from "./content/project-domains.json";
 
 const nextConfig: NextConfig = {
+  // Hosted directory indexes need their trailing slash for relative assets.
+  skipTrailingSlashRedirect: true,
   // Node Fluid Compute — avoid Edge for DB/fs content APIs
   serverExternalPackages: ["@neondatabase/serverless"],
   redirects() {
