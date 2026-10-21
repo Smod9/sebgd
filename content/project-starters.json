@@ -80,8 +80,11 @@
       "Repair"
     ],
     "group": "other",
-    "asset_needed": true,
-    "review_notes": "Needs a photo of the repaired grater or the correct final v04 handle. The intermediate visual predates the final revision."
+    "asset_needed": false,
+    "review_notes": "Final Oct 10 v04 handle, matched to the supplied model provenance. These are CAD renders of the replacement handle.",
+    "cover": "/projects/models/grater-repair/card.webp",
+    "render_image": "/projects/models/grater-repair/angles.png",
+    "render_caption": "Final v04 replacement handle — four views of the actual CAD model."
   },
   {
     "slug": "hotfoot-sailing",
@@ -149,8 +152,11 @@
       "Prototype"
     ],
     "group": "other",
-    "asset_needed": true,
-    "review_notes": "Needs the correct v04 preview or an actual print photo. Carrying strength and sealing have not been tested."
+    "asset_needed": false,
+    "review_notes": "Actual BKR v04 model renders supplied for the site. Original thread/straw fit worked; carry-loop/skirt physical validation remains unverified.",
+    "cover": "/projects/models/bkr-straw-lid/card.webp",
+    "render_image": "/projects/models/bkr-straw-lid/angles.png",
+    "render_caption": "BKR v04 — isometric, reverse, top, and threaded underside. CAD renders; the carry-loop/skirt revision remains a prototype."
   },
   {
     "slug": "bon-vivant-iot",

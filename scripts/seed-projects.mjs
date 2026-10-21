@@ -17,6 +17,8 @@ for (const [index, item] of items.entries()) {
     asset_needed: Boolean(item.asset_needed), review_notes: item.review_notes,
     cover_position: item.cover_position,
     embed_preview: item.embed_preview,
+    render_image: item.render_image,
+    render_caption: item.render_caption,
   };
   const front = { id: `project-${item.slug}`, slug: item.slug, title: item.title, type: "work", status: "draft", published_at: null, tags: item.tags, cover_blob_url: item.cover || null, meta };
   const source = "---\n" + Object.entries(front).map(([key, value]) => `${key}: ${JSON.stringify(value)}`).join("\n") + "\n---\n" + item.body + "\n";

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageIntro } from "@/components/PageChrome";
@@ -54,6 +55,8 @@ export default async function WorkDetailPage({ params }: Props) {
   const lessons = typeof post?.meta.learnings === "string" ? post.meta.learnings.trim() : "";
   const lessonsHtml = lessons ? await renderMarkdown(lessons) : "";
   const cover = post ? post.cover_blob_url || `/api/social-card/${encodeURIComponent(post.slug)}` : null;
+  const renderImage = typeof post?.meta.render_image === "string" && (post.meta.render_image.startsWith("/projects/") || projectUrl(post.meta.render_image)) ? post.meta.render_image : null;
+  const renderCaption = typeof post?.meta.render_caption === "string" ? post.meta.render_caption : "CAD model views.";
 
   return (
     <article className="article-page project-page">
@@ -72,6 +75,12 @@ export default async function WorkDetailPage({ params }: Props) {
         </div>
         {cover ? <ProjectPreview key={slug} title={title} cover={cover} website={website} embedUrl={projectEmbedUrl(website, post?.meta.embed_preview)} coverPosition={typeof post?.meta.cover_position === "string" ? post.meta.cover_position : undefined} /> : null}
       </div>
+      {renderImage ? <figure className="project-model-views">
+        <a href={renderImage} target="_blank" rel="noopener noreferrer" aria-label={`Open full-size ${title} model views`}>
+          <Image src={renderImage} alt={`${title}: multi-angle renders of the actual model`} width={3600} height={2400} unoptimized sizes="(max-width: 800px) 100vw, 1200px" />
+        </a>
+        <figcaption>{renderCaption}</figcaption>
+      </figure> : null}
       <div className={`project-story${lessons ? " has-lessons" : ""}`}>
         <section className="project-details" aria-label="Project details"><div className="body-html" dangerouslySetInnerHTML={{ __html: html }} /></section>
         {lessons ? <section className="project-lessons" aria-labelledby="lessons-title"><h2 id="lessons-title">What I learned</h2><div className="body-html" dangerouslySetInnerHTML={{ __html: lessonsHtml }} /></section> : null}

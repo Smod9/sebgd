@@ -615,6 +615,9 @@ button, input, textarea, select { font: inherit; }
 .project-detail-links { margin-top: 24px; gap: 10px; }
 .project-preview { display: block; min-width: 0; overflow: hidden; border: 1px solid var(--color-line); border-radius: 12px; background: #fff; text-decoration: none; }
 .project-preview img { display: block; width: 100%; height: auto; aspect-ratio: 1200 / 630; object-fit: cover; }
+.project-model-views { margin: 0 0 48px; }
+.project-model-views img { display: block; width: 100%; height: auto; border-radius: 12px; }
+.project-model-views figcaption { margin-top: 12px; color: var(--color-muted); font-size: 12px; line-height: 1.6; }
 .project-preview-caption { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 12px 16px; border-top: 1px solid var(--color-line); color: var(--color-muted); font-size: 12px; }
 .project-preview-caption a { display: flex; align-items: center; gap: 12px; min-width: 0; text-decoration: none; }
 .project-preview-caption a span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
