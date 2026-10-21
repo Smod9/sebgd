@@ -531,6 +531,9 @@ button, input, textarea, select { font: inherit; }
 .thought-card:nth-of-type(9n + 6) .thought-text, .thought-card:nth-of-type(9n + 7) .thought-text { font-size: 27px; line-height: 1.4; }
 .thought-date { margin: 0 0 18px; color: var(--color-muted); font-size: 12px; font-weight: 500; letter-spacing: .01em; }
 .thought-source { margin: 20px 0 0; color: var(--color-muted); font-size: 11px; line-height: 1.6; }
+.thought-source-mobile { display: none; }
+.thought-source details p { margin: 8px 0 0; }
+.thought-source summary { cursor: pointer; }
 .thought-permalink { display: flex; justify-content: space-between; gap: 12px; color: var(--color-muted); text-decoration: none; font-size: 11px; }
 .thought-permalink:hover { color: var(--color-text); }
 /* Reserve the full action row. Hover and keyboard focus change opacity only. */
@@ -565,12 +568,17 @@ button, input, textarea, select { font: inherit; }
   .thought-grid[data-thought-layout] .thought-card:nth-of-type(9n + 6) { width: calc((100% - 24px) / 2); }
 }
 @media (max-width: 640px) {
-  .thought-grid { grid-template-columns: minmax(0, 1fr); gap: 18px; --thought-gap: 18px; }
+  .thought-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; --thought-gap: 12px; }
   .thought-grid[data-thought-layout] .thought-grid-sizer, .thought-grid[data-thought-layout] .thought-card:nth-of-type(n) { width: 100%; }
-  .thought-grid[data-thought-layout] .thought-card { margin-bottom: 18px; }
-  .thought-card, .thought-card:nth-of-type(n) { grid-column: span 1; padding: 24px; }
-  .thought-card:nth-of-type(9n + 1) .thought-text { font-size: 28px; }
-  .thought-card:nth-of-type(9n + 6) .thought-text, .thought-card:nth-of-type(9n + 7) .thought-text { font-size: 24px; }
+  .thought-grid[data-thought-layout] .thought-card { margin-bottom: 12px; }
+  .thought-card, .thought-card:nth-of-type(n) { grid-column: span 1; padding: 18px; }
+  .thought-card:nth-of-type(n) .thought-text { font-size: 18px; line-height: 1.5; letter-spacing: -.025em; }
+  .thought-date { margin-bottom: 10px; }
+  .thought-source { margin-top: 12px; font-size: 12px; }
+  .thought-source-desktop { display: none; }
+  .thought-source-mobile { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline; }
+  .thought-source-mobile details { flex: 1 1 auto; }
+  .thought-actions { margin-top: 12px; opacity: 1; }
 }
 @media (max-width: 480px) { .brand-name { display: none; } }
 
@@ -581,8 +589,10 @@ button, input, textarea, select { font: inherit; }
 .thought-pullquote footer { display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: baseline; margin-top: 28px; color: var(--color-muted); font-size: 12px; }
 .thought-pullquote footer a { text-decoration: none; }
 @media (max-width: 640px) {
-  .thought-pullquote { padding: 44px 0 30px; }
-  .thought-quote-mark { top: -6px; font-size: 76px; }
+  .thought-pullquote { padding: 0 0 24px; }
+  .thought-quote-mark { display: none; }
+  .thought-pullquote > p { max-width: none; font-family: var(--font-sans); font-size: 18px; line-height: 1.5; }
+  .thought-pullquote footer { margin-top: 14px; }
 }
 
 .shared-thought-page .thought-grid[data-thought-layout] .thought-grid-sizer, .shared-thought-page .thought-grid[data-thought-layout] .thought-card:nth-of-type(n) { width: 100%; }

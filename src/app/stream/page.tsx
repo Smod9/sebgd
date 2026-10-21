@@ -22,7 +22,7 @@ export default async function StreamPage() {
 
   return (
     <>
-      <PageIntro kicker="Thoughts" title="A few things I’ve thunk.">
+      <PageIntro kicker="Thoughts" title="A few thinks I’ve thunk.">
         <p>
           Things I’m building, learning, and thinking about. Usually in 140 characters.
         </p>

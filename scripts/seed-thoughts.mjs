@@ -39,6 +39,7 @@ for (const { slug, body, timestamp } of podcastStarters) {
     format: "thought", starter: true, created_at: new Date().toISOString(),
     source_title: "Final Draft episode 004 · Human minds, artificial minds, and alignment",
     source_published_date: "2026-10-08", source_timestamp: timestamp,
+    source_url: "https://podcasts.apple.com/us/podcast/human-minds-artificial-minds-and-alignment/id6815796268?i=1000793763787",
     source_kind: "edited_transcript_excerpt", context_editorial: true,
     recording_date: null, speaker_verification: "unlabeled transcript; not audio-verified",
   };

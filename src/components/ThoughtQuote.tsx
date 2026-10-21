@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Post } from "@/lib/types";
+import { ThoughtSource } from "@/components/ThoughtSource";
 
 export function ThoughtQuote({ post }: { post: Post }) {
   const date = post.published_at
@@ -12,6 +13,7 @@ export function ThoughtQuote({ post }: { post: Post }) {
     <blockquote className="thought-pullquote">
       <span className="thought-quote-mark" aria-hidden="true">“</span>
       <p>{post.body || post.title}</p>
+      <div><ThoughtSource meta={post.meta} /></div>
       <footer>
         <span>Sebastien Gouin-Davis</span>
         <Link href={`/thoughts/${encodeURIComponent(post.slug)}`} aria-label={`Read latest thought${date ? ` from ${date}` : ""}`}>
