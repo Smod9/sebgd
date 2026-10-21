@@ -12,32 +12,56 @@ export function ThoughtMasonry({ children }: { children: ReactNode }) {
     let cancelled = false;
     let masonry: Masonry | undefined;
     let observer: ResizeObserver | undefined;
+    let previousSize = "";
+    const cards = Array.from(element.querySelectorAll<HTMLElement>(".thought-card"));
+
+    const layout = () => {
+      if (!masonry) return;
+      const gap = parseFloat(getComputedStyle(element).getPropertyValue("--thought-gap"));
+      const size = [element.getBoundingClientRect().width, gap, ...cards.flatMap((card) => {
+        const bounds = card.getBoundingClientRect();
+        return [bounds.width, bounds.height];
+      })].join(",");
+      // Masonry writes the container height. Ignore that observer notification,
+      // along with hover/focus changes that leave all card dimensions intact.
+      if (size === previousSize) return;
+      previousSize = size;
+      masonry.option?.({ gutter: gap });
+      masonry.layout?.();
+    };
 
     void import("masonry-layout").then(({ default: MasonryLayout }) => {
       if (cancelled) return;
-      element.dataset.masonry = "true";
-      masonry = new MasonryLayout(element, {
+      // data-masonry is reserved by the library and would auto-create a second instance.
+      element.dataset.thoughtLayout = "true";
+      const options: Masonry.Options & { layoutInstant: boolean } = {
         itemSelector: ".thought-card",
         columnWidth: ".thought-grid-sizer",
-        gutter: parseFloat(getComputedStyle(element).getPropertyValue("--thought-gap")),
-        percentPosition: true,
+        // Percentage offsets scale immediately with CSS widths while old top
+        // positions remain. Keep both axes in pixels and update before paint.
+        percentPosition: false,
         horizontalOrder: false,
         transitionDuration: 0,
-      });
-      // Text edits and responsive widths can change card heights. Hover cannot:
-      // its permanently reserved controls only change opacity.
-      observer = new ResizeObserver(() => {
-        masonry?.option?.({ gutter: parseFloat(getComputedStyle(element).getPropertyValue("--thought-gap")) });
-        masonry?.layout?.();
-      });
-      element.querySelectorAll(".thought-card").forEach((card) => observer?.observe(card));
+        // Skip Outlayer's translate3d move path entirely, even at duration 0,
+        // so resized cards do not leave temporary composited border layers.
+        layoutInstant: true,
+        resize: false,
+        initLayout: false,
+      };
+      masonry = new MasonryLayout(element, options);
+      layout();
+      observer = new ResizeObserver(layout);
+      observer.observe(element);
+      cards.forEach((card) => observer?.observe(card));
+      window.addEventListener("resize", layout);
     });
 
     return () => {
       cancelled = true;
+      window.removeEventListener("resize", layout);
       observer?.disconnect();
       masonry?.destroy?.();
-      delete element.dataset.masonry;
+      delete element.dataset.thoughtLayout;
     };
   }, [children]);
 
