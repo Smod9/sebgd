@@ -1,10 +1,10 @@
 import { randomUUID } from "crypto";
+import { thoughtTitle, validatePostContent } from "./publishing";
 import { ensureSchema, getDb, hasDatabaseUrl } from "./db";
 import {
   createMarkdownPost,
   getMarkdownPost,
   listMarkdownPosts,
-  publishMarkdownPost,
   softDeleteMarkdownPost,
   updateMarkdownPost,
 } from "./markdown-store";
@@ -125,6 +125,8 @@ export async function getPostById(id: string): Promise<Post | null> {
 }
 
 export async function createPost(input: PostInput): Promise<Post> {
+  validatePostContent(input);
+  if (input.type === "note" && input.meta?.format === "thought") input = { ...input, slug: input.slug?.trim() || `thought-${randomUUID().slice(0, 8)}`, title: thoughtTitle(input.body ?? ""), body: input.body?.trim(), meta: { ...input.meta, created_at: input.meta.created_at ?? new Date().toISOString() } };
   if (hasDatabaseUrl()) {
     await ensureSchema();
     const db = getDb();
@@ -172,6 +174,14 @@ export async function updatePost(
       : null;
   if (!current) return null;
 
+  validatePostContent({ type: patch.type ?? current.type, body: patch.body ?? current.body, meta: patch.meta ?? current.meta });
+  if ((patch.type ?? current.type) === "note" && (patch.meta ?? current.meta).format === "thought" && patch.body !== undefined) {
+    patch = { ...patch, body: patch.body.trim(), title: thoughtTitle(patch.body) };
+  }
+  if (patch.status === "published" && current.status !== "published" && patch.published_at === undefined) {
+    patch = { ...patch, published_at: new Date().toISOString() };
+  }
+
   if (hasDatabaseUrl()) {
     await ensureSchema();
     const db = getDb();
@@ -217,13 +227,7 @@ export async function updatePost(
 }
 
 export async function publishPost(slug: string): Promise<Post | null> {
-  if (hasDatabaseUrl()) {
-    return updatePost(
-      { slug },
-      { status: "published", published_at: new Date().toISOString() },
-    );
-  }
-  return publishMarkdownPost(slug);
+  return updatePost({ slug }, { status: "published", published_at: new Date().toISOString() });
 }
 
 export async function softDeletePost(identifier: {

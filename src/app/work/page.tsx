@@ -1,18 +1,25 @@
 export const dynamic = "force-dynamic";
 
 import type { Metadata } from "next";
+import { ProjectExplorer } from "@/components/ProjectExplorer";
 import { EmptyState } from "@/components/EmptyState";
 import { PageIntro, SectionRule } from "@/components/PageChrome";
-import { ProjectGrid, projectFromPost } from "@/components/ProjectGrid";
+import { projectFromPost } from "@/components/ProjectGrid";
 import { listPosts } from "@/lib/posts";
+import { isDesignPreview } from "@/lib/design-preview";
+import { withProjectPreview } from "@/lib/project-preview";
 
 export const metadata: Metadata = {
   title: "Projects",
   description: "Software, hardware, and experiments by Sebastien Gouin-Davis.",
 };
 
-export default async function WorkPage() {
+export default async function WorkPage({ searchParams }: {
+  searchParams?: Promise<{ preview?: string }>;
+}) {
   const workPosts = await listPosts({ type: "work", status: "published" });
+  const preview = isDesignPreview((await searchParams)?.preview);
+  const projects = preview ? withProjectPreview(workPosts.map(projectFromPost)) : workPosts.map(projectFromPost);
 
   return (
     <>
@@ -23,10 +30,11 @@ export default async function WorkPage() {
       </PageIntro>
       <SectionRule
         left="Projects"
-        right={`${workPosts.length} published`}
+        right={preview ? `${projects.length} in preview` : `${workPosts.length} published`}
       />
-      {workPosts.length > 0 ? (
-        <ProjectGrid projects={workPosts.map(projectFromPost)} />
+      {preview ? <p className="preview-notice">Local design preview · proposed project selection, not published.</p> : null}
+      {projects.length > 0 ? (
+        <ProjectExplorer projects={projects} />
       ) : (
         <EmptyState
           title="No projects published yet."

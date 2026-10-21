@@ -6,5 +6,5 @@ type Props = {
 
 export default async function AdminPostPage({ params }: Props) {
   const { id } = await params;
-  return <AdminPostEditor id={id} />;
+  return <AdminPostEditor key={id} id={id} />;
 }

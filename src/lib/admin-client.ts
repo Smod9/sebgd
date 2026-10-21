@@ -73,6 +73,7 @@ export async function adminFetch<T>(
 }
 
 export type CreatePostPayload = {
+  meta?: Record<string, unknown>;
   type: PostType;
   title: string;
   slug?: string;
@@ -83,6 +84,7 @@ export type CreatePostPayload = {
 };
 
 export type UpdatePostPayload = {
+  meta?: Record<string, unknown>;
   type?: PostType;
   title?: string;
   slug?: string;

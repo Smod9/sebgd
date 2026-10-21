@@ -4,6 +4,8 @@ import Link from "next/link";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useAdminToken } from "@/components/admin/AdminGate";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
+import { ProjectFields, type ProjectFieldsValue } from "@/components/admin/ProjectFields";
+import { characterCount, THOUGHT_LIMIT, thoughtTitle, validatePostContent } from "@/lib/publishing";
 import {
   createAdminPost,
   deleteAdminPost,
@@ -50,15 +52,15 @@ export function AdminDashboard() {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [coverUrl, setCoverUrl] = useState("");
+  const [project, setProject] = useState<ProjectFieldsValue>({ summary: "", demoUrl: "", repoUrl: "", tags: "", group: "" });
 
   const reload = useCallback(async () => {
-    setLoading(true);
-    setError(null);
     try {
       const [postsRes, nowRes] = await Promise.all([
         listAdminPosts(token, { status: "all" }),
         getAdminNow(token),
       ]);
+      setError(null);
       setPosts(postsRes.posts.filter((p) => !p.deleted_at));
       setNowText(nowRes.items.join("\n"));
     } catch (err) {
@@ -69,8 +71,17 @@ export function AdminDashboard() {
   }, [token]);
 
   useEffect(() => {
-    void reload();
-  }, [reload]);
+    let active = true;
+    Promise.all([listAdminPosts(token, { status: "all" }), getAdminNow(token)])
+      .then(([postsRes, nowRes]) => {
+        if (!active) return;
+        setPosts(postsRes.posts.filter((post) => !post.deleted_at));
+        setNowText(nowRes.items.join("\n"));
+      })
+      .catch((err) => { if (active) setError(err instanceof Error ? err.message : "Failed to load admin data"); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [token]);
 
   const visible = useMemo(() => {
     return posts
@@ -84,18 +95,23 @@ export function AdminDashboard() {
   }, [posts, statusFilter, typeFilter]);
 
   async function publishCompose(as: PostStatus) {
-    if (!title.trim()) {
-      setError("Title is required.");
+    const nextTitle = type === "note" ? thoughtTitle(body) : title.trim();
+    if (!nextTitle) {
+      setError(type === "note" ? "Write a thought first." : "Title is required.");
       return;
     }
     setBusy(true);
     setError(null);
     setMessage(null);
     try {
+      const meta = type === "note" ? { format: "thought" } : type === "work" ? { summary: project.summary.trim(), demo_url: project.demoUrl.trim(), repo_url: project.repoUrl.trim(), group: project.group } : undefined;
+      validatePostContent({ type, body: body.trim(), meta });
       const { post } = await createAdminPost(token, {
         type,
-        title: title.trim(),
-        body,
+        title: nextTitle,
+        body: type === "note" ? body.trim() : body,
+        meta,
+        tags: type === "work" ? project.tags.split(",").map((tag) => tag.trim()).filter(Boolean) : undefined,
         status: as,
         cover_blob_url: coverUrl.trim() || undefined,
       });
@@ -103,6 +119,7 @@ export function AdminDashboard() {
       setBody("");
       setCoverUrl("");
       setType("note");
+      setProject({ summary: "", demoUrl: "", repoUrl: "", tags: "", group: "" });
       setMessage(
         as === "published"
           ? `Published “${post.title}”.`
@@ -187,7 +204,7 @@ export function AdminDashboard() {
           <h1>Compose</h1>
         </div>
         <p className="muted admin-header-copy">
-          Drop a thought, attach a pic, publish. Unlinked from public nav.
+          Post a thought, add a project, or write something longer.
         </p>
       </header>
 
@@ -206,14 +223,14 @@ export function AdminDashboard() {
               >
                 {COMPOSE_TYPES.map((t) => (
                   <option key={t} value={t}>
-                    {t}
+                    {t === "note" ? "Thought · 140 characters" : t === "work" ? "Project" : t === "essay" ? "Longer writing" : t}
                   </option>
                 ))}
               </select>
             </label>
           </div>
 
-          <label className="admin-label">
+          {type !== "note" ? <label className="admin-label">
             Title
             <input
               className="admin-input admin-title-input"
@@ -222,23 +239,29 @@ export function AdminDashboard() {
               placeholder="What’s this about?"
               autoFocus
             />
-          </label>
+          </label> : null}
+
+          {type === "work" ? <ProjectFields value={project} onChange={setProject} /> : null}
+          {type === "work" ? <label className="admin-label">Cover image URL (optional)<input type="url" className="admin-input" value={coverUrl} onChange={(e) => setCoverUrl(e.target.value)} placeholder="Paste an existing social-card URL, or upload below" /></label> : null}
 
           <label className="admin-label">
-            Body
+            {type === "note" ? "Thought" : "Details (markdown)"}
             <textarea
               className="admin-input admin-textarea admin-textarea-compose"
               value={body}
               onChange={(e) => setBody(e.target.value)}
-              rows={12}
-              placeholder="Write in markdown…"
+              rows={type === "note" ? 4 : 12}
+              aria-describedby={type === "note" ? "thought-counter" : undefined}
+              placeholder={type === "note" ? "What’s on your mind?" : "How it works, what you learned, what’s next…"}
             />
           </label>
+          {type === "note" ? <p id="thought-counter" className={characterCount(body) > THOUGHT_LIMIT ? "admin-error" : "muted tiny"} aria-live="polite">{characterCount(body)} / {THOUGHT_LIMIT}</p> : null}
 
-          <ImageUploadField
+          {type !== "note" ? <ImageUploadField
             token={token}
             disabled={busy}
             onUploaded={(url, alt) => {
+              if (type === "work") { setCoverUrl(url); setMessage("Project cover uploaded."); return; }
               setBody((prev) => insertMarkdownImage(prev, url, alt));
               setMessage("Image uploaded and inserted into the body.");
             }}
@@ -246,7 +269,7 @@ export function AdminDashboard() {
               setCoverUrl(url);
               setMessage("Cover image set.");
             }}
-          />
+          /> : null}
 
           {coverUrl ? (
             <p className="muted tiny">
@@ -268,10 +291,10 @@ export function AdminDashboard() {
             <button
               type="button"
               className="btn btn-primary"
-              disabled={busy}
+              disabled={busy || (type === "note" && characterCount(body.trim()) > THOUGHT_LIMIT)}
               onClick={() => void publishCompose("published")}
             >
-              {busy ? "Working…" : "Publish now"}
+              {busy ? "Working…" : type === "note" ? "Post thought" : type === "work" ? "Publish project" : "Publish now"}
             </button>
             <button
               type="button"

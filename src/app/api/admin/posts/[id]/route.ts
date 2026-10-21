@@ -63,13 +63,17 @@ export async function PATCH(request: Request, ctx: Ctx) {
     patch.type = t;
   }
 
-  const byId = await getPostById(id);
-  const post = byId
-    ? await updatePost({ id }, patch)
-    : await updatePost({ slug: id }, patch);
+  try {
+    const byId = await getPostById(id);
+    const post = byId
+      ? await updatePost({ id }, patch)
+      : await updatePost({ slug: id }, patch);
 
-  if (!post) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  return NextResponse.json({ post });
+    if (!post) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    return NextResponse.json({ post });
+  } catch (error) {
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Update failed" }, { status: 400 });
+  }
 }
 
 export async function DELETE(request: Request, ctx: Ctx) {

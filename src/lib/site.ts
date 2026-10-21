@@ -3,14 +3,15 @@ export const SITE = {
   fullName: "Sebastien Gouin-Davis",
   title: "Sebastien Gouin-Davis — projects & experiments",
   description:
-    "Software, hardware, and personal projects by Sebastien Gouin-Davis. Based on Salt Spring Island, BC.",
+    "Software, hardware, and personal projects by Sebastien Gouin-Davis. Built in the Gulf Islands, BC.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://sebgd.com",
-  location: "Salt Spring Island, BC · 48°49′N 123°30′W",
+  location: "Built in the Gulf Islands, BC.",
   email: "sebgd@icloud.com",
 } as const;
 
 export const NAV = [
   { href: "/work", label: "Projects" },
+  { href: "/stream", label: "Thoughts" },
   { href: "/about", label: "About" },
 ] as const;
 

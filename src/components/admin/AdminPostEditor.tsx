@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAdminToken } from "@/components/admin/AdminGate";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
+import { ProjectFields, type ProjectFieldsValue } from "@/components/admin/ProjectFields";
+import { characterCount, THOUGHT_LIMIT, thoughtTitle } from "@/lib/publishing";
 import {
   deleteAdminPost,
   getAdminPost,
@@ -39,12 +41,14 @@ export function AdminPostEditor({ id }: { id: string }) {
   const [status, setStatus] = useState<PostStatus>("draft");
   const [tags, setTags] = useState("");
   const [coverUrl, setCoverUrl] = useState("");
+  const [ideaDate, setIdeaDate] = useState("");
+  const [project, setProject] = useState<ProjectFieldsValue>({ summary: "", demoUrl: "", repoUrl: "", tags: "", group: "" });
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const { post: next } = await getAdminPost(token, id);
+  useEffect(() => {
+    let active = true;
+    getAdminPost(token, id).then(({ post: next }) => {
+      if (!active) return;
+      setError(null);
       setPost(next);
       setType(next.type);
       setTitle(next.title);
@@ -53,17 +57,15 @@ export function AdminPostEditor({ id }: { id: string }) {
       setStatus(next.status);
       setTags(next.tags.join(", "));
       setCoverUrl(next.cover_blob_url ?? "");
-    } catch (err) {
+      setIdeaDate(typeof next.meta.idea_date === "string" ? next.meta.idea_date : "");
+      setProject({ summary: String(next.meta.summary ?? ""), demoUrl: String(next.meta.demo_url ?? ""), repoUrl: String(next.meta.repo_url ?? ""), tags: next.tags.join(", "), group: String(next.meta.group ?? "") });
+    }).catch((err) => {
+      if (!active) return;
       setError(err instanceof Error ? err.message : "Failed to load post");
       setPost(null);
-    } finally {
-      setLoading(false);
-    }
+    }).finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
   }, [id, token]);
-
-  useEffect(() => {
-    void load();
-  }, [load]);
 
   async function save(patch?: { status?: PostStatus; action?: "publish" }) {
     if (!post) return;
@@ -71,16 +73,14 @@ export function AdminPostEditor({ id }: { id: string }) {
     setError(null);
     setMessage(null);
     try {
-      const payload =
-        patch?.action === "publish"
-          ? { action: "publish" as const }
-          : {
+      const payload = {
               type,
-              title: title.trim(),
+              title: type === "note" && post.meta.format === "thought" ? thoughtTitle(body) : title.trim(),
               slug: slug.trim(),
               body,
-              status: patch?.status ?? status,
-              tags: tags
+              status: patch?.action === "publish" ? "published" as const : patch?.status ?? status,
+              meta: type === "work" ? { ...post.meta, summary: project.summary.trim(), demo_url: project.demoUrl.trim(), repo_url: project.repoUrl.trim(), group: project.group } : type === "note" && post.meta.format === "thought" ? { ...post.meta, idea_date: ideaDate || null, idea_date_approximate: Boolean(ideaDate) } : post.meta,
+              tags: (type === "work" ? project.tags : tags)
                 .split(",")
                 .map((t) => t.trim())
                 .filter(Boolean),
@@ -155,7 +155,7 @@ export function AdminPostEditor({ id }: { id: string }) {
       <header className="admin-header">
         <div>
           <p className="kicker">Edit</p>
-          <h1>{post.title}</h1>
+          <h1>{post.meta.format === "thought" ? "Edit thought" : post.title}</h1>
         </div>
         <p className="muted mono tiny">
           {post.id} · {post.status}
@@ -191,7 +191,7 @@ export function AdminPostEditor({ id }: { id: string }) {
             <option value="published">published</option>
           </select>
         </label>
-        <label className="admin-label admin-span-2">
+        {!(type === "note" && post.meta.format === "thought") ? <label className="admin-label admin-span-2">
           Title
           <input
             className="admin-input admin-title-input"
@@ -199,7 +199,10 @@ export function AdminPostEditor({ id }: { id: string }) {
             onChange={(e) => setTitle(e.target.value)}
             required
           />
-        </label>
+        </label> : null}
+        {type === "work" ? <div className="admin-span-2"><ProjectFields value={project} onChange={setProject} /></div> : null}
+        {type === "note" && post.meta.format === "thought" ? <label className="admin-label admin-span-2">Approximate idea date (optional)<input type="date" className="admin-input" value={ideaDate} onChange={(e) => setIdeaDate(e.target.value)} /><span className="muted tiny">An idea/discussion date. The posting date is set separately when you publish.</span></label> : null}
+        {type === "work" ? <label className="admin-label admin-span-2">Cover image URL (optional)<input type="url" className="admin-input" value={coverUrl} onChange={(e) => setCoverUrl(e.target.value)} placeholder="Paste an existing social-card URL, or upload below" /></label> : null}
         <label className="admin-label admin-span-2">
           Slug
           <input
@@ -209,16 +212,16 @@ export function AdminPostEditor({ id }: { id: string }) {
             required
           />
         </label>
-        <label className="admin-label admin-span-2">
+        {type !== "work" ? <label className="admin-label admin-span-2">
           Tags <span className="muted">(comma-separated)</span>
           <input
             className="admin-input"
             value={tags}
             onChange={(e) => setTags(e.target.value)}
           />
-        </label>
+        </label> : null}
         <label className="admin-label admin-span-2">
-          Body (markdown)
+          {type === "note" && post.meta.format === "thought" ? "Thought · 140 characters" : "Body (markdown)"}
           <textarea
             className="admin-input admin-textarea admin-textarea-lg"
             value={body}
@@ -226,12 +229,14 @@ export function AdminPostEditor({ id }: { id: string }) {
             rows={16}
           />
         </label>
+        {type === "note" && post.meta.format === "thought" ? <p className="muted tiny">{characterCount(body)} / {THOUGHT_LIMIT}</p> : null}
 
         <div className="admin-span-2">
           <ImageUploadField
             token={token}
             disabled={busy}
             onUploaded={(url, alt) => {
+              if (type === "work") { setCoverUrl(url); setMessage("Project cover uploaded — save to persist."); return; }
               setBody((prev) => insertMarkdownImage(prev, url, alt));
               setMessage("Image uploaded and inserted into the body.");
             }}

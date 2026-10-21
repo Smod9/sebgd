@@ -1,33 +1,35 @@
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
+import { ProjectExplorer } from "@/components/ProjectExplorer";
 import { EmptyState } from "@/components/EmptyState";
-import { PostList } from "@/components/PostList";
-import { ProjectGrid, projectFromPost } from "@/components/ProjectGrid";
+import { ThoughtQuote } from "@/components/ThoughtQuote";
+import { projectFromPost } from "@/components/ProjectGrid";
 import { listPosts } from "@/lib/posts";
-import { PROJECT_PREVIEW } from "@/lib/project-preview";
+import { withProjectPreview } from "@/lib/project-preview";
+import { isDesignPreview } from "@/lib/design-preview";
+import { listThoughts } from "@/lib/thoughts";
 
 export default async function HomePage({
   searchParams,
 }: {
   searchParams: Promise<{ preview?: string }>;
 }) {
+  const preview = isDesignPreview((await searchParams).preview);
   const [work, thoughts] = await Promise.all([
     listPosts({ type: "work", status: "published" }),
-    listPosts({ type: ["note", "essay"], status: "published" }),
+    listThoughts(false),
   ]);
-  const preview = process.env.NODE_ENV === "development" && (await searchParams).preview === "1";
-  const projects = preview ? PROJECT_PREVIEW : work.map(projectFromPost);
+  const projects = preview ? withProjectPreview(work.map(projectFromPost)) : work.map(projectFromPost);
 
   return (
     <>
       <section className="hero" aria-labelledby="intro-title">
-        <p className="hero-eyebrow">Software. Hardware. Whatever’s next.</p>
-        <h1 className="hero-headline" id="intro-title">I like making things.</h1>
+        <h1 className="hero-headline" id="intro-title">I can’t not make things.</h1>
         <p className="hero-support">
-          I’m Seb. These are my projects, experiments, and the things
-          I wanted to exist. Built on Salt Spring Island, BC.
+          Dad of 3. Sailor. Pilot. Builder of things that need building (or at least things I like the idea of).
         </p>
+        <p className="hero-location">Built in the Gulf Islands, BC.</p>
         <a href="#projects" className="hero-project-link">Explore the projects <span aria-hidden="true">↓</span></a>
       </section>
 
@@ -38,7 +40,7 @@ export default async function HomePage({
         </div>
         {preview ? <p className="preview-notice">Local design preview · proposed project selection, not published.</p> : null}
         {projects.length > 0 ? (
-          <ProjectGrid projects={projects} />
+          <ProjectExplorer projects={projects} />
         ) : (
           <EmptyState
             title="Projects are on the way."
@@ -49,14 +51,18 @@ export default async function HomePage({
 
       <section className="home-thoughts" aria-labelledby="thoughts-title">
         <div className="section-heading">
-          <h2 id="thoughts-title">A few thoughts</h2>
-          <Link href="/stream" className="quiet-link">All thoughts <span aria-hidden="true">↗</span></Link>
+          <h2 id="thoughts-title">Latest thought</h2>
+          <Link href="/stream" className="quiet-link">More thoughts <span aria-hidden="true">↗</span></Link>
         </div>
         {thoughts.length > 0 ? (
-          <PostList posts={thoughts.slice(0, 2)} />
+          <ThoughtQuote post={thoughts[0]} />
         ) : (
           <p className="thoughts-empty">An occasional note on what I’m thinking about.</p>
         )}
+        <p className="personal-note">
+          Also on a personal vendetta to make SaaS companies pay for what they’ve
+          done to the world. Mostly by building the thing myself.
+        </p>
       </section>
     </>
   );

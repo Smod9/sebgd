@@ -23,7 +23,7 @@ export default async function AboutPage() {
 
       <div className="prose-page" style={{ maxWidth: "62ch" }}>
         <p>
-          I live on Salt Spring Island and spend most of my attention on
+          I’m based in the Gulf Islands, BC, and spend most of my attention on
           hardware-software edges — power over data, field tooling, and the
           messy middle between a lab bench and a boat that is already in the
           water.

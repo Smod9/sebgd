@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { assertAdmin } from "@/lib/auth";
 import { createPost, listPosts } from "@/lib/posts";
 import { POST_TYPES, type PostType } from "@/lib/types";
+import { thoughtTitle } from "@/lib/publishing";
 
 export const runtime = "nodejs";
 
@@ -36,7 +37,8 @@ export async function POST(request: Request) {
   }
 
   const { type, title } = body as { type?: string; title?: string };
-  if (!type || !POST_TYPES.includes(type as PostType) || !title?.trim()) {
+  const postTitle = type === "note" && body.meta?.format === "thought" && typeof body.body === "string" ? thoughtTitle(body.body) : typeof title === "string" ? title.trim() : "";
+  if (!type || !POST_TYPES.includes(type as PostType) || !postTitle) {
     return NextResponse.json(
       { error: "type and title are required" },
       { status: 400 },
@@ -46,7 +48,7 @@ export async function POST(request: Request) {
   try {
     const post = await createPost({
       type: type as PostType,
-      title: title.trim(),
+      title: postTitle,
       slug: typeof body.slug === "string" ? body.slug : undefined,
       body: typeof body.body === "string" ? body.body : "",
       status: body.status === "published" ? "published" : "draft",

@@ -7,13 +7,13 @@ export function SiteFooter() {
       <div className="site-footer-inner">
         <div>
           <p className="footer-brand">Sebastien Gouin-Davis</p>
-          <p className="muted tiny">Salt Spring Island, BC</p>
+          <p className="muted tiny">{SITE.location}</p>
         </div>
         <nav className="footer-nav" aria-label="Footer">
           <Link href="/stream">Thoughts</Link>
           <a href="https://github.com/Smod9">GitHub</a>
           <a href={`mailto:${SITE.email}`}>Say hello ↗</a>
-          <Link href="/rss.xml">RSS</Link>
+          <a href="/rss.xml">RSS</a>
         </nav>
       </div>
     </footer>

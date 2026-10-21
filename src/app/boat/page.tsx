@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import type { Metadata } from "next";
+import Image from "next/image";
 import { EmptyState } from "@/components/EmptyState";
 import { PageIntro, SectionRule } from "@/components/PageChrome";
 import { PostList } from "@/components/PostList";
@@ -16,12 +17,12 @@ export default async function BoatPage() {
 
   return (
     <>
-      <PageIntro kicker="Bon Vivant" title="A boat that keeps rewriting the plan.">
+      <PageIntro kicker="The boat" title="Bon Vivant.">
         <p>
-          Logbook for the refit: electrical first, then whatever the boat
-          decides is urgent. Expect unfinished sentences and honest status.
+          The boat, its systems, and the work along the way.
         </p>
       </PageIntro>
+      <Image src="/projects/bon-vivant.jpg" alt="Bon Vivant sailing under full sail" width={1024} height={768} sizes="(max-width: 1184px) 100vw, 1072px" className="boat-photo" />
       <SectionRule
         left="Logbook"
         right={logs.length ? `${logs.length} entries` : "no entries yet"}
@@ -30,10 +31,10 @@ export default async function BoatPage() {
         <PostList posts={logs} />
       ) : (
         <EmptyState
-          title="Logbook is still dry."
-          body="When the next tank, mast, or charging-path note is ready, it lands here — not a staged photo gallery."
+          title="Logbook entries are on the way."
+          body="Refit notes and updates will appear here."
           ctaHref="/work/bon-vivant"
-          ctaLabel="Work stub"
+          ctaLabel="About the refit"
         />
       )}
     </>

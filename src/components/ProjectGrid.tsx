@@ -1,3 +1,4 @@
+import { projectGroup, type ProjectGroup } from "@/lib/project-filters";
 import Image from "next/image";
 import Link from "next/link";
 import type { Post } from "@/lib/types";
@@ -8,18 +9,19 @@ export type ProjectCard = {
   description: string;
   href: string;
   cover?: string | null;
-  coverFit?: "cover" | "contain";
   tags: string[];
+  group?: ProjectGroup;
 };
 
 export function projectFromPost(post: Post): ProjectCard {
   return {
     id: post.id,
     title: post.title,
-    description: post.body.split("\n\n")[0],
+    description: typeof post.meta.summary === "string" && post.meta.summary ? post.meta.summary : post.body.split("\n\n")[0],
     href: `/work/${post.slug}`,
-    cover: post.cover_blob_url,
+    cover: post.cover_blob_url || `/api/social-card/${encodeURIComponent(post.slug)}`,
     tags: post.tags,
+    group: projectGroup(post.tags, post.meta.group),
   };
 }
 
@@ -28,7 +30,12 @@ export function ProjectGrid({ projects }: { projects: ProjectCard[] }) {
     <div className="project-grid">
       {projects.map((project) => (
         <article key={project.id} className="work-item project-card">
-          <Link href={project.href} className="project-link">
+          <Link
+            href={project.href}
+            className="project-link"
+            target={project.href.startsWith("https://") ? "_blank" : undefined}
+            rel={project.href.startsWith("https://") ? "noopener noreferrer" : undefined}
+          >
             <div className={`project-cover${project.cover ? " has-image" : ""}`}>
               {project.cover ? (
                 <Image
@@ -36,7 +43,6 @@ export function ProjectGrid({ projects }: { projects: ProjectCard[] }) {
                   alt=""
                   fill
                   unoptimized
-                  style={{ objectFit: project.coverFit ?? "cover" }}
                   sizes="(max-width: 640px) 100vw, (max-width: 960px) 50vw, 33vw"
                 />
               ) : (

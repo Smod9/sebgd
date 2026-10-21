@@ -57,12 +57,14 @@ export function AdminGate({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const stored = getStoredAdminToken();
-    if (!stored) {
-      setChecking(false);
-      return;
-    }
-    void verify(stored);
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (cancelled) return;
+      const stored = getStoredAdminToken();
+      if (stored) void verify(stored);
+      else setChecking(false);
+    });
+    return () => { cancelled = true; };
   }, [verify]);
 
   function onSubmit(e: FormEvent) {

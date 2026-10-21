@@ -13,8 +13,8 @@ Personal site for **Sebastien Gouin-Davis** — projects, experiments, and occas
 
 | Path | Purpose |
 |------|---------|
-| `/` | Introduction, published project grid, and recent thoughts |
-| `/stream` | Chronological feed |
+| `/` | Introduction, published projects, and latest-thought pull quote |
+| `/stream` | Wide and compact thoughts in a staggered grid |
 | `/work`, `/work/[slug]` | Published projects and detail pages |
 | `/writing`, `/writing/[slug]` | Essays |
 | `/boat` | Bon Vivant log |
@@ -48,11 +48,66 @@ the proposed project selection from `src/lib/project-preview.ts`, with an
 explicit preview label. It does not create posts or publish content. The normal
 homepage and production builds always use published posts from the content store.
 
+To keep the proposed selection visible on both the homepage and Projects while
+navigating, start with `SEBGD_DESIGN_PREVIEW=1 DATABASE_URL='' npm run dev`.
+Use `?preview=0` to inspect the published-only view. The environment flag is
+ignored in production.
+
 The preview leads with personal builds and includes Bon Vivant and Luum as
-ongoing projects. Demo URLs came from the repositories' homepage metadata;
-Articulation Dojo requires its own sign-in. Some cards still use their project
-name until a suitable image is selected. The avatar uses the original supplied
-illustration, cropped into a circle with CSS.
+ongoing projects. Demo URLs came from repository homepage metadata;
+Articulation Dojo requires its own sign-in. Published projects appear before
+proposed entries, so adding real projects works during local review too.
+The avatar uses the supplied illustration with a wide circular crop; the boat
+uses the supplied sailing photo. All gallery frames use 1200 × 630 proportions,
+with photos cropped edge to edge. Missing social cards render automatically.
+
+Project galleries offer subtle Software / Big projects / Other stuff filters and
+search across titles, descriptions, and categories. Groups can be set explicitly
+in the project editor; older projects infer a group from their categories.
+
+## Adding projects and thoughts
+
+Open `/write` and unlock the existing admin with `SEBGD_ADMIN_TOKEN`.
+
+- Choose **Project**. Add a title, short description, categories, a project group, optional demo
+  and repository URLs, and details. Upload a cover or paste its URL. Without a
+  cover, `/api/social-card/<slug>` generates a 1200 × 630 PNG automatically.
+  Save a draft or publish; published projects appear on the homepage and Projects.
+  Project pages include demo/source links and social-sharing image metadata.
+- Choose **Thought · 140 characters**. Write the thought without a title; the
+  live counter and server enforce the limit for new short thoughts. Save a draft
+  or post. The latest published thought appears as a homepage pull quote; `/stream` shows the full grid.
+  Older notes and longer writing stay intact.
+- Use the Posts list to edit, publish, unpublish, or soft-delete existing items.
+
+`npm run seed:thoughts` creates the 15 approved starters as local Markdown
+drafts, with no publication dates. Existing files and edits are never overwritten.
+With `SEBGD_DESIGN_PREVIEW=1`, these drafts appear in the local thoughts grid
+with edit links and explicit draft labels. Production and RSS exclude them.
+The seeder never connects to a database or publishes content.
+The approved approximate idea dates use Pacific date-only values and display
+as “Approx.”; actual publication dates remain unset until publishing. They can
+be edited separately in the thought editor. To reapply only the supplied date
+metadata without changing thought text, use `npm run seed:thoughts -- --update-dates`.
+
+The site RSS feed is `/rss.xml`; the Thoughts-only feed is `/rss.xml?type=note`.
+Both always include published content only, regardless of local preview mode.
+
+Thoughts support an anonymous thumbs up and undo. An HTTP-only visitor cookie
+keeps a browser's vote idempotent; clearing cookies creates a new visitor.
+Counts use a separate Neon `thought_likes` table in production. Local development
+uses atomic per-visitor files under ignored `.local/thought-likes/`. Draft starters
+can receive test reactions only in the explicit local design preview. Production
+rejects reactions to drafts and requires Neon for persistent public counts.
+Like and Share controls have a permanently reserved action row: desktop hover
+and keyboard focus change opacity only, so cards do not move. Touch devices keep
+the controls visible. Share copies a `/thoughts/<slug>` permalink with its own
+quote image at `/api/thought-social-card/<slug>` and Open Graph/Twitter metadata.
+Draft share previews and their images remain unavailable in production.
+
+Image uploads require the existing Vercel Blob token; automatic social cards
+and text publishing do not. On Vercel, persistent authored posts require Neon;
+local Markdown writes are intended for local work and committed content.
 
 Checks: `node --test tests/work-page.test.mjs`, `npx tsc --noEmit`, and
 `npm run build`. Use `DATABASE_URL=''` for a build or preview against local
