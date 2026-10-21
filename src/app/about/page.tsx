@@ -58,9 +58,6 @@ export default async function AboutPage() {
             <li style={{ marginBottom: 8 }}>
               Working on Bon Vivant
             </li>
-            <li style={{ marginBottom: 8 }}>
-              30 days of builds
-            </li>
           </ul>
         )}
 

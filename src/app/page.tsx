@@ -38,7 +38,6 @@ export default async function HomePage({
       <section className="home-projects" id="projects" aria-labelledby="projects-title">
         <div className="section-heading">
           <h2 id="projects-title">Projects & experiments</h2>
-          <span className="section-caption">30 days of builds</span>
         </div>
         {preview ? <p className="preview-notice">Local design preview · proposed project selection, not published.</p> : null}
         {projects.length > 0 ? (
