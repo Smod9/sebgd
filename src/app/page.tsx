@@ -1,57 +1,61 @@
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
-import { CtaGroup, SectionRule } from "@/components/PageChrome";
 import { EmptyState } from "@/components/EmptyState";
 import { PostList } from "@/components/PostList";
+import { ProjectGrid, projectFromPost } from "@/components/ProjectGrid";
 import { listPosts } from "@/lib/posts";
-import { SITE } from "@/lib/site";
+import { PROJECT_PREVIEW } from "@/lib/project-preview";
 
-export default async function HomePage() {
-  const posts = await listPosts({ status: "published" });
-  const preview = posts.slice(0, 4);
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ preview?: string }>;
+}) {
+  const [work, thoughts] = await Promise.all([
+    listPosts({ type: "work", status: "published" }),
+    listPosts({ type: ["note", "essay"], status: "published" }),
+  ]);
+  const preview = process.env.NODE_ENV === "development" && (await searchParams).preview === "1";
+  const projects = preview ? PROJECT_PREVIEW : work.map(projectFromPost);
 
   return (
     <>
-      <section className="hero" aria-label="Introduction">
-        <p className="hero-brand" aria-label="SEB">
-          SEB
-        </p>
-        <h1 className="hero-headline">Things under construction.</h1>
+      <section className="hero" aria-labelledby="intro-title">
+        <p className="hero-eyebrow">Software. Hardware. Whatever’s next.</p>
+        <h1 className="hero-headline" id="intro-title">I like making things.</h1>
         <p className="hero-support">
-          Notes, builds, essays, boats, and useful distractions.
+          I’m Seb. These are my projects, experiments, and the things
+          I wanted to exist. Built on Salt Spring Island, BC.
         </p>
-        <p className="hero-meta mono tiny muted">{SITE.location}</p>
-        <CtaGroup />
+        <a href="#projects" className="hero-project-link">Explore the projects <span aria-hidden="true">↓</span></a>
       </section>
 
-      <section className="home-stream" aria-label="Recent stream">
-        <SectionRule
-          left="Stream"
-          right={
-            posts.length
-              ? `${posts.length} ${posts.length === 1 ? "entry" : "entries"}`
-              : "quiet for now"
-          }
-        />
-        {preview.length > 0 ? (
-          <>
-            <PostList posts={preview} />
-            {posts.length > preview.length ? (
-              <p style={{ marginTop: 8 }}>
-                <Link href="/stream" className="text-link">
-                  Full stream
-                </Link>
-              </p>
-            ) : null}
-          </>
+      <section className="home-projects" id="projects" aria-labelledby="projects-title">
+        <div className="section-heading">
+          <h2 id="projects-title">Projects & experiments</h2>
+          <span className="section-caption">30 days of builds</span>
+        </div>
+        {preview ? <p className="preview-notice">Local design preview · proposed project selection, not published.</p> : null}
+        {projects.length > 0 ? (
+          <ProjectGrid projects={projects} />
         ) : (
           <EmptyState
-            title="The stream is empty on purpose."
-            body="When something is worth writing down, it will show up here — no filler, no fake metrics."
-            ctaHref="/about"
-            ctaLabel="About Seb"
+            title="Projects are on the way."
+            body="This is where the builds will live, with a closer look at each one."
           />
+        )}
+      </section>
+
+      <section className="home-thoughts" aria-labelledby="thoughts-title">
+        <div className="section-heading">
+          <h2 id="thoughts-title">A few thoughts</h2>
+          <Link href="/stream" className="quiet-link">All thoughts <span aria-hidden="true">↗</span></Link>
+        </div>
+        {thoughts.length > 0 ? (
+          <PostList posts={thoughts.slice(0, 2)} />
+        ) : (
+          <p className="thoughts-empty">An occasional note on what I’m thinking about.</p>
         )}
       </section>
     </>

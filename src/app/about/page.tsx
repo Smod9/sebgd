@@ -17,8 +17,7 @@ export default async function AboutPage() {
     <>
       <PageIntro kicker="About" title={SITE.fullName}>
         <p>
-          Engineer. Boats. Systems that have to work when the weather does not
-          care about your roadmap.
+          I build software, hardware, and the systems that connect them.
         </p>
       </PageIntro>
 
@@ -30,13 +29,9 @@ export default async function AboutPage() {
           water.
         </p>
         <p>
-          This site is intentionally unfinished. The stream is for things I can
-          stand behind. Work pages stay as stubs until there is a real story,
-          not a metrics costume.
-        </p>
-        <p>
-          If you are looking for a polished personal brand kit, you are early —
-          or late, depending on how you feel about sanding.
+          This is a collection of personal builds, ongoing projects, and
+          experiments. I also write occasional notes about what I’m working on
+          and thinking about.
         </p>
 
         <h2
@@ -59,12 +54,12 @@ export default async function AboutPage() {
           </ul>
         ) : (
           <ul style={{ paddingLeft: "1.1em", marginTop: 12 }}>
-            <li style={{ marginBottom: 8 }}>Building Luum — X-PoE in pilot</li>
+            <li style={{ marginBottom: 8 }}>Building Luum</li>
             <li style={{ marginBottom: 8 }}>
-              Refitting Bon Vivant — electrical
+              Working on Bon Vivant
             </li>
             <li style={{ marginBottom: 8 }}>
-              Writing this site so agents can backfill the rest
+              30 days of builds
             </li>
           </ul>
         )}

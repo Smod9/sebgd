@@ -1,43 +1,38 @@
 export const dynamic = "force-dynamic";
 
 import type { Metadata } from "next";
-import Link from "next/link";
+import { EmptyState } from "@/components/EmptyState";
 import { PageIntro, SectionRule } from "@/components/PageChrome";
+import { ProjectGrid, projectFromPost } from "@/components/ProjectGrid";
 import { listPosts } from "@/lib/posts";
-import { WORK_STUBS } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Work",
-  description: "Projects under construction — titles and status, no fake numbers.",
+  title: "Projects",
+  description: "Software, hardware, and experiments by Sebastien Gouin-Davis.",
 };
 
 export default async function WorkPage() {
   const workPosts = await listPosts({ type: "work", status: "published" });
-  const bySlug = new Map(workPosts.map((p) => [p.slug, p]));
 
   return (
     <>
-      <PageIntro kicker="Work" title="Projects, unfinished on purpose.">
+      <PageIntro kicker="Projects" title="Things I’ve made.">
         <p>
-          Status lines only. When a project deserves a longer write-up, it gets
-          a page — not a vanity metric strip.
+          Projects and experiments, with a page for the details.
         </p>
       </PageIntro>
-      <SectionRule left="Active" right={`${WORK_STUBS.length} stubs`} />
-      <div className="work-list">
-        {WORK_STUBS.map((item) => {
-          const post = bySlug.get(item.slug);
-          return (
-            <article key={item.slug} className="work-item">
-              <p className="work-status mono tiny muted">{item.status}</p>
-              <h2>
-                <Link href={`/work/${item.slug}`}>{item.title}</Link>
-              </h2>
-              <p>{post?.body.split("\n\n")[0] || item.blurb}</p>
-            </article>
-          );
-        })}
-      </div>
+      <SectionRule
+        left="Projects"
+        right={`${workPosts.length} published`}
+      />
+      {workPosts.length > 0 ? (
+        <ProjectGrid projects={workPosts.map(projectFromPost)} />
+      ) : (
+        <EmptyState
+          title="No projects published yet."
+          body="Projects will appear here when they are published."
+        />
+      )}
     </>
   );
 }

@@ -1,6 +1,6 @@
 # sebgd.com
 
-Personal site for **Sebastien Gouin-Davis** — notes, work stubs, boat log, and side quests.
+Personal site for **Sebastien Gouin-Davis** — projects, experiments, and occasional thoughts.
 
 ## Stack
 
@@ -13,9 +13,9 @@ Personal site for **Sebastien Gouin-Davis** — notes, work stubs, boat log, and
 
 | Path | Purpose |
 |------|---------|
-| `/` | Brand-first landing (SEB hero) |
+| `/` | Introduction, published project grid, and recent thoughts |
 | `/stream` | Chronological feed |
-| `/work`, `/work/[slug]` | Work stubs + detail |
+| `/work`, `/work/[slug]` | Published projects and detail pages |
 | `/writing`, `/writing/[slug]` | Essays |
 | `/boat` | Bon Vivant log |
 | `/quests` | Side quests |
@@ -42,6 +42,21 @@ cp .env.example .env.local
 npm install
 npm run dev
 ```
+
+For local design review, visit `/?preview=1`. In development only, this shows
+the proposed project selection from `src/lib/project-preview.ts`, with an
+explicit preview label. It does not create posts or publish content. The normal
+homepage and production builds always use published posts from the content store.
+
+The preview leads with personal builds and includes Bon Vivant and Luum as
+ongoing projects. Demo URLs came from the repositories' homepage metadata;
+Articulation Dojo requires its own sign-in. Some cards still use their project
+name until a suitable image is selected. The avatar uses the original supplied
+illustration, cropped into a circle with CSS.
+
+Checks: `node --test tests/work-page.test.mjs`, `npx tsc --noEmit`, and
+`npm run build`. Use `DATABASE_URL=''` for a build or preview against local
+Markdown content without accessing Neon.
 
 ## MCP
 
