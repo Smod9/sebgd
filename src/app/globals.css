@@ -509,6 +509,7 @@ button, input, textarea, select { font: inherit; }
 .thought-card:nth-of-type(9n + 3) .thought-text { font-size: 18px; line-height: 1.6; }
 .thought-card:nth-of-type(9n + 6) .thought-text, .thought-card:nth-of-type(9n + 7) .thought-text { font-size: 27px; line-height: 1.4; }
 .thought-date { margin: 0 0 18px; color: var(--color-muted); font-size: 12px; font-weight: 500; letter-spacing: .01em; }
+.thought-source { margin: 20px 0 0; color: var(--color-muted); font-size: 11px; line-height: 1.6; }
 .thought-permalink { display: flex; justify-content: space-between; gap: 12px; color: var(--color-muted); text-decoration: none; font-size: 11px; }
 .thought-permalink:hover { color: var(--color-text); }
 /* Reserve the full action row. Hover and keyboard focus change opacity only. */

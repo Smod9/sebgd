@@ -270,13 +270,13 @@ test("thought grids omit subject lines and expose draft starters only in the loc
   }
 });
 
-test("starter seeding creates 15 undated drafts and preserves subsequent user edits", () => {
+test("starter seeding creates 15 thoughts and three attributed podcast drafts, preserving user edits", () => {
   const starters = JSON.parse(readFileSync(path.join(root, "content/thought-starters.json"), "utf8"));
   assert.equal(starters.length, 15);
   assert.equal(new Set(starters).size, 15);
   const directory = mkdtempSync(path.join(tmpdir(), "sebgd-seeder-test-"));
   mkdirSync(path.join(directory, "content"));
-  for (const file of ["thought-starters.json", "thought-starter-dates.json"]) writeFileSync(path.join(directory, "content", file), readFileSync(path.join(root, "content", file)));
+  for (const file of ["thought-starters.json", "thought-starter-dates.json", "podcast-thought-starters.json"]) writeFileSync(path.join(directory, "content", file), readFileSync(path.join(root, "content", file)));
   try {
   execFileSync(process.execPath, [path.join(root, "scripts/seed-thoughts.mjs")], { cwd: directory });
   for (const [index, body] of starters.entries()) {
@@ -287,11 +287,30 @@ test("starter seeding creates 15 undated drafts and preserves subsequent user ed
     assert.match(text, /published_at: null/);
     assert.equal(text.split("---\n").at(-1).trim(), body);
   }
+  const podcasts = JSON.parse(readFileSync(path.join(root, "content/podcast-thought-starters.json"), "utf8"));
+  assert.equal(podcasts.length, 3);
+  for (const { slug, body, timestamp } of podcasts) {
+    const text = readFileSync(path.join(directory, "content/posts", `${slug}.md`), "utf8");
+    assert.ok(Array.from(body).length <= 140);
+    assert.equal(text.split("---\n").at(-1).trim(), body);
+    assert.match(text, /status: "draft"/);
+    assert.match(text, /published_at: null/);
+    const meta = JSON.parse(text.match(/^meta: (.+)$/m)[1]);
+    assert.equal(meta.source_published_date, "2026-10-08");
+    assert.equal(meta.source_timestamp, timestamp);
+    assert.equal(meta.recording_date, null);
+    assert.equal(meta.source_kind, "edited_transcript_excerpt");
+    assert.doesNotMatch(text, /\/Users\//);
+  }
+  const podcastFile = path.join(directory, "content/posts", `${podcasts[0].slug}.md`);
+  const editedPodcast = readFileSync(podcastFile, "utf8").replace(podcasts[0].body, "Seb’s edited podcast thought.");
+  writeFileSync(podcastFile, editedPodcast);
   const first = path.join(directory, "content/posts/thought-starter-01.md");
   const edited = readFileSync(first, "utf8").replace(starters[0], "The user’s edited thought.");
   writeFileSync(first, edited);
   execFileSync(process.execPath, [path.join(root, "scripts/seed-thoughts.mjs"), "--update-dates"], { cwd: directory });
   assert.equal(readFileSync(first, "utf8"), edited);
+  assert.equal(readFileSync(podcastFile, "utf8"), editedPodcast);
   } finally { rmSync(directory, { recursive: true, force: true }); }
 });
 

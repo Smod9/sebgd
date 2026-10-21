@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAdminToken } from "@/components/admin/AdminGate";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { ProjectFields, type ProjectFieldsValue } from "@/components/admin/ProjectFields";
+import { ThoughtSource } from "@/components/ThoughtSource";
 import { characterCount, THOUGHT_LIMIT, thoughtTitle } from "@/lib/publishing";
 import {
   deleteAdminPost,
@@ -166,6 +167,7 @@ export function AdminPostEditor({ id }: { id: string }) {
       {message ? <p className="admin-ok">{message}</p> : null}
 
       <form className="admin-form admin-grid" onSubmit={onSubmit}>
+        <div className="admin-span-2"><ThoughtSource meta={post.meta} className="muted tiny" /></div>
         <label className="admin-label">
           Type
           <select

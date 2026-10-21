@@ -80,7 +80,7 @@ Open `/write` and unlock the existing admin with `SEBGD_ADMIN_TOKEN`.
   Older notes and longer writing stay intact.
 - Use the Posts list to edit, publish, unpublish, or soft-delete existing items.
 
-`npm run seed:thoughts` creates the 15 approved starters as local Markdown
+`npm run seed:thoughts` creates the 15 approved starters and three selected podcast excerpts as local Markdown
 drafts, with no publication dates. Existing files and edits are never overwritten.
 With `SEBGD_DESIGN_PREVIEW=1`, these drafts appear in the local thoughts grid
 with edit links and explicit draft labels. Production and RSS exclude them.
@@ -89,6 +89,11 @@ The approved approximate idea dates use Pacific date-only values and display
 as “Approx.”; actual publication dates remain unset until publishing. They can
 be edited separately in the thought editor. To reapply only the supplied date
 metadata without changing thought text, use `npm run seed:thoughts -- --update-dates`.
+The podcast excerpts retain their approved edited wording and bracketed editorial
+context. Source metadata records Final Draft episode 004, its publication date
+2026-10-08, and the supplied transcript ranges. This date is labeled as the episode
+publication date, not a recording or thought-posting date. Recording date is unknown;
+speaker labels were not independently audio-verified. No local source paths are exposed.
 
 The site RSS feed is `/rss.xml`; the Thoughts-only feed is `/rss.xml?type=note`.
 Both always include published content only, regardless of local preview mode.
