@@ -99,6 +99,14 @@ public project fields are sent, without local preparation notes. Published proje
 metadata may set `gallery_position` (zero-based) to keep its placement independent
 of posting dates, including Luumi in the second slot. Requested site changes now
 ship live after practical checks and public verification, per Seb's preference.
+
+Project subdomains are recorded in `content/project-domains.json`. Seven are native
+aliases on their existing Vercel projects; `shift.sebgd.com` is a host-specific 307
+redirect configured here to the public Read the Shift Site. Vercel manages sebgd.com
+DNS and its existing wildcard record. The older `schem.sebgd.com` alias remains valid.
+Update the matching published project's `meta.demo_url` only after the new hostname
+passes public HTTPS checks. Desktop/physical projects and unrecovered or private
+prototypes keep their sebgd detail pages until they have a suitable public host.
 The approved approximate idea dates use Pacific date-only values and display
 as “Approx.”; actual publication dates remain unset until publishing. They can
 be edited separately in the thought editor. To reapply only the supplied date
