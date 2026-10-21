@@ -52,17 +52,16 @@ button, input, textarea, select { font: inherit; }
 .nav-desktop a:hover, .nav-desktop a[aria-current="page"], .footer-nav a:hover { color: var(--color-text); }
 .nav-desktop a[aria-current="page"] { text-decoration: underline; text-underline-offset: 7px; text-decoration-color: #c8c8c2; }
 
-.hero { padding: clamp(48px, 6vw, 72px) 0 clamp(56px, 6vw, 80px); max-width: 840px; }
+.hero { padding: 24px 0 28px; max-width: 840px; }
 .hero-eyebrow { color: var(--color-muted); font-size: 13px; margin: 0 0 25px; }
 .hero-headline { margin: 0; font-size: clamp(44px, 6.6vw, 76px); line-height: 1.07; font-weight: 500; letter-spacing: -.065em; text-wrap: balance; }
-.hero-support { margin: 25px 0 0; max-width: 490px; color: var(--color-muted); font-size: 17px; line-height: 1.65; letter-spacing: -.015em; }
-.hero-location { margin: 18px 0 0; font-size: 12px; color: var(--color-muted); }
-.hero-project-link { display: inline-flex; align-items: center; gap: 18px; margin-top: 28px; font-size: 13px; text-decoration: none; }
-.hero-project-link span { transition: transform 180ms ease; }
-.hero-project-link:hover span { transform: none; }
+.hero-support { margin: 16px 0 0; max-width: 490px; color: var(--color-muted); font-size: 17px; line-height: 1.65; letter-spacing: -.015em; }
+.hero-location { margin: 10px 0 0; font-size: 12px; color: var(--color-muted); }
 .section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
 .section-heading h2 { margin: 0; font-size: 16px; font-weight: 500; letter-spacing: -.025em; }
 .section-caption, .quiet-link { font-size: 12px; color: var(--color-muted); text-decoration: none; }
+.home-projects .section-heading { margin-bottom: 16px; }
+.home-projects .project-tools { margin-bottom: 20px; }
 .preview-notice { margin: -6px 0 24px; padding: 10px 14px; border-radius: 6px; background: #f5f5f7; color: var(--color-muted); font-size: 12px; }
 
 .project-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 42px 24px; }
@@ -135,7 +134,6 @@ button, input, textarea, select { font: inherit; }
   .profile-avatar { width: 52px; height: 52px; flex-basis: 52px; }
   .nav-desktop { gap: 18px; }
   .nav-desktop a { font-size: 12px; }
-  .hero { padding-top: 58px; padding-bottom: 60px; }
   .hero-support { font-size: 16px; }
   .project-grid { grid-template-columns: 1fr; gap: 32px; }
   .project-cover-title { font-size: 36px; }

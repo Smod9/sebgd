@@ -10,6 +10,7 @@ import { listProjectShowcase } from "@/lib/project-showcase";
 import { isDesignPreview } from "@/lib/design-preview";
 import { listThoughts } from "@/lib/thoughts";
 import { orderProjectCards } from "@/lib/project-filters";
+import { SITE } from "@/lib/site";
 
 export default async function HomePage({
   searchParams,
@@ -31,8 +32,7 @@ export default async function HomePage({
         <p className="hero-support">
           Dad of 3. Sailor. Pilot. Builder of things.
         </p>
-        <p className="hero-location">Built in the Gulf Islands, BC.</p>
-        <a href="#projects" className="hero-project-link">Explore the projects <span aria-hidden="true">↓</span></a>
+        <p className="hero-location">{SITE.location}</p>
       </section>
 
       <section className="home-projects" id="projects" aria-labelledby="projects-title">

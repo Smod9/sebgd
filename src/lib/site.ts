@@ -3,9 +3,9 @@ export const SITE = {
   fullName: "Sebastien Gouin-Davis",
   title: "Sebastien Gouin-Davis — projects & experiments",
   description:
-    "Software, hardware, and personal projects by Sebastien Gouin-Davis. Built in the Gulf Islands, BC.",
+    "Software, hardware, and personal projects by Sebastien Gouin-Davis. Living in the Gulf Islands, BC.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://sebgd.com",
-  location: "Built in the Gulf Islands, BC.",
+  location: "Living in the Gulf Islands, BC.",
   email: "sebgd@icloud.com",
 } as const;
 
