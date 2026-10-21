@@ -77,7 +77,9 @@ Open `/write` and unlock the existing admin with `SEBGD_ADMIN_TOKEN`.
   cover, `/api/social-card/<slug>` generates a 1200 × 630 PNG automatically.
   Save a draft or publish; published projects appear on the homepage and Projects.
   Project pages embed the linked website as an interactive live preview, alongside a short
-  description and website/source links. The social-card image stays in the gallery and is
+  description and website/source links. The embed uses a 1280 × 900 desktop viewport scaled
+  proportionally to its container, so the preview column does not trigger a mobile layout.
+  The social-card image stays in the gallery and is
   available through **Show image**. Known framing-blocked sites and sign-in-only apps keep
   their image preview and open separately; set `meta.embed_preview` to `false` to opt out.
   Add **What I learned** to capture surprises, firsts, or what you would do differently;

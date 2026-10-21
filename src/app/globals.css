@@ -618,8 +618,8 @@ button, input, textarea, select { font: inherit; }
 .project-preview-caption a span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .project-preview-caption button { flex-shrink: 0; border: 0; padding: 0; background: transparent; color: var(--color-text); font-size: 12px; cursor: pointer; text-decoration: underline; }
 .project-preview-separate { font-size: 11px; text-align: right; }
-.project-live-viewport { height: 460px; background: #fff; }
-.project-live-viewport iframe { display: block; width: 100%; height: 100%; border: 0; }
+.project-live-viewport { position: relative; aspect-ratio: 1280 / 900; overflow: hidden; background: #fff; }
+.project-live-viewport iframe { display: block; position: absolute; top: 0; left: 0; width: 1280px; height: 900px; max-width: none; border: 0; transform-origin: top left; }
 .project-story { padding-top: 32px; border-top: 1px solid var(--color-line); }
 .project-story.has-lessons { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; }
 .project-story .body-html { font-size: 16px; }
@@ -627,7 +627,6 @@ button, input, textarea, select { font: inherit; }
 .project-story .body-html > :last-child { margin-bottom: 0; }
 .project-lessons h2 { margin: 0 0 18px; font-size: 22px; font-weight: 500; letter-spacing: -.035em; }
 @media (max-width: 800px) {
-  .project-live-viewport { height: clamp(340px, 60vh, 520px); }
   .project-overview.has-preview { grid-template-columns: minmax(0, 1fr); gap: 28px; }
   .project-story.has-lessons { grid-template-columns: minmax(0, 1fr); gap: 32px; }
   .project-lessons { padding-top: 28px; border-top: 1px solid var(--color-line); }
