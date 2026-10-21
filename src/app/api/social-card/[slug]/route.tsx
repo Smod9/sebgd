@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import { ProjectSocialCard } from "@/components/ProjectSocialCard";
-import { getPost } from "@/lib/posts";
+import { getShowcaseWork } from "@/lib/project-showcase";
 import { isDesignPreview } from "@/lib/design-preview";
 import { PROJECT_PREVIEW } from "@/lib/project-preview";
 
@@ -9,9 +9,9 @@ export const dynamic = "force-dynamic";
 
 export async function GET(_request: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const post = await getPost(slug);
+  const post = await getShowcaseWork(slug);
   const preview = isDesignPreview() ? PROJECT_PREVIEW.find((project) => project.id === slug) : undefined;
-  if ((!post || post.type !== "work" || post.status !== "published" || post.deleted_at) && !preview) {
+  if (!post && !preview) {
     return new Response("Not found", { status: 404 });
   }
   const title = preview?.title ?? post!.title;

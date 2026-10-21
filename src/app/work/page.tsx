@@ -7,7 +7,8 @@ import { PageIntro, SectionRule } from "@/components/PageChrome";
 import { projectFromPost } from "@/components/ProjectGrid";
 import { listPosts } from "@/lib/posts";
 import { isDesignPreview } from "@/lib/design-preview";
-import { withProjectPreview } from "@/lib/project-preview";
+import { listProjectShowcase } from "@/lib/project-showcase";
+import { orderProjectCards } from "@/lib/project-filters";
 
 export const metadata: Metadata = {
   title: "Projects",
@@ -19,7 +20,8 @@ export default async function WorkPage({ searchParams }: {
 }) {
   const workPosts = await listPosts({ type: "work", status: "published" });
   const preview = isDesignPreview((await searchParams)?.preview);
-  const projects = preview ? withProjectPreview(workPosts.map(projectFromPost)) : workPosts.map(projectFromPost);
+  const published = orderProjectCards(workPosts.map(projectFromPost));
+  const projects = preview ? await listProjectShowcase(published) : published;
 
   return (
     <>

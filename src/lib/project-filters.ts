@@ -2,6 +2,15 @@ import type { ProjectCard } from "@/components/ProjectGrid";
 
 export type ProjectGroup = "software" | "big-projects" | "other";
 
+// Explicit positions let selected projects keep their place independently of posting dates.
+export function orderProjectCards(projects: ProjectCard[]) {
+  const positioned = projects.filter((project) => Number.isFinite(project.galleryPosition))
+    .sort((a, b) => a.galleryPosition! - b.galleryPosition!);
+  const ordered = projects.filter((project) => !Number.isFinite(project.galleryPosition));
+  for (const project of positioned) ordered.splice(Math.max(0, Math.min(ordered.length, Math.trunc(project.galleryPosition!))), 0, project);
+  return ordered;
+}
+
 export function projectGroup(tags: string[], group?: unknown): ProjectGroup {
   if (group === "software" || group === "big-projects" || group === "other") return group;
   const categories = tags.map((tag) => tag.toLowerCase());

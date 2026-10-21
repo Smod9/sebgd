@@ -85,6 +85,17 @@ drafts, with no publication dates. Existing files and edits are never overwritte
 With `SEBGD_DESIGN_PREVIEW=1`, these drafts appear in the local thoughts grid
 with edit links and explicit draft labels. Production and RSS exclude them.
 The seeder never connects to a database or publishes content.
+`npm run seed:projects` adds the 11 selected showcase projects as editable local
+Markdown drafts without changing existing entries. In the local design preview,
+these join the existing six cards, with Luumi second. Edit links open the normal
+project editor; preparation notes and missing-image flags stay in the local draft
+workflow. Production, published-only views, detail pages, social-card endpoints,
+and RSS exclude these drafts. Read the Shift is included; Race Around the Rock is not.
+Publishing the approved selection uses the existing production admin API; only
+public project fields are sent, without local preparation notes. Published project
+metadata may set `gallery_position` (zero-based) to keep its placement independent
+of posting dates, including Luumi in the second slot. Requested site changes now
+ship live after practical checks and public verification, per Seb's preference.
 The approved approximate idea dates use Pacific date-only values and display
 as “Approx.”; actual publication dates remain unset until publishing. They can
 be edited separately in the thought editor. To reapply only the supplied date

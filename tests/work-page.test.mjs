@@ -314,6 +314,73 @@ test("starter seeding creates 15 thoughts and three attributed podcast drafts, p
   } finally { rmSync(directory, { recursive: true, force: true }); }
 });
 
+test("selected project seeding adds 11 editable drafts once and preserves subsequent edits", () => {
+  const items = JSON.parse(readFileSync(path.join(root, "content/project-starters.json"), "utf8"));
+  assert.equal(items.length, 11);
+  assert.equal(new Set(items.map((item) => item.slug)).size, 11);
+  assert.ok(!items.some((item) => /race around the rock/i.test(item.title)));
+  const directory = mkdtempSync(path.join(tmpdir(), "sebgd-project-seeds-"));
+  try {
+    mkdirSync(path.join(directory, "content"));
+    writeFileSync(path.join(directory, "content/project-starters.json"), JSON.stringify(items));
+    execFileSync(process.execPath, [path.join(root, "scripts/seed-projects.mjs")], { cwd: directory });
+    for (const item of items) {
+      const file = path.join(directory, "content/posts", `${item.slug}.md`);
+      const text = readFileSync(file, "utf8");
+      assert.match(text, /status: "draft"/);
+      assert.match(text, /published_at: null/);
+      assert.equal(text.split("---\n").at(-1).trim(), item.body);
+      assert.doesNotMatch(text, /\/Users\//);
+    }
+    const file = path.join(directory, "content/posts/luumi.md");
+    const edited = readFileSync(file, "utf8").replace(items[0].body, "Seb's saved Luumi details.");
+    writeFileSync(file, edited);
+    execFileSync(process.execPath, [path.join(root, "scripts/seed-projects.mjs")], { cwd: directory });
+    assert.equal(readFileSync(file, "utf8"), edited);
+  } finally { rmSync(directory, { recursive: true, force: true }); }
+});
+
+test("project showcase merges editable drafts with six existing cards and keeps Luumi near the top", async () => {
+  const previousMode = process.env.NODE_ENV;
+  const previousFlag = process.env.SEBGD_DESIGN_PREVIEW;
+  try {
+    process.env.NODE_ENV = "development";
+    process.env.SEBGD_DESIGN_PREVIEW = "1";
+    await withLocalStore(async (source) => {
+      const store = source("lib/posts.ts");
+      const items = JSON.parse(readFileSync(path.join(root, "content/project-starters.json"), "utf8"));
+      for (const [index, item] of items.entries()) await store.createPost({
+        slug: item.slug, title: item.title, type: "work", status: "draft", body: item.body, tags: item.tags,
+        meta: { summary: item.summary, showcase_preview: true, showcase_order: index, ...(typeof item.position === "number" ? { showcase_position: item.position } : {}), asset_needed: Boolean(item.asset_needed) },
+      });
+      await store.createPost({ slug: "secret-project", title: "Private unselected project", type: "work", status: "draft" });
+      const showcase = source("lib/project-showcase.ts");
+      let cards = await showcase.listProjectShowcase([]);
+      assert.equal(cards.length, 17);
+      assert.equal(cards[1].title, "Luumi");
+      assert.ok(!cards.some((card) => /Private unselected|Race Around the Rock/.test(card.title)));
+      const luumi = await store.getPost("luumi");
+      await store.updatePost({ id: luumi.id }, { meta: { ...luumi.meta, summary: "Seb's new description." } });
+      cards = await showcase.listProjectShowcase([]);
+      assert.equal(cards[1].description, "Seb's new description.");
+      const deduplicated = await showcase.listProjectShowcase([{ ...cards[1], id: "published-luumi" }]);
+      assert.equal(deduplicated.filter((card) => card.title === "Luumi").length, 1);
+      assert.ok(await showcase.getShowcaseWork("luumi"));
+      assert.equal(await showcase.getShowcaseWork("secret-project"), null);
+      const html = renderToStaticMarkup(source("components/ProjectGrid.tsx").ProjectGrid({ projects: cards }));
+      assert.match(html, /Edit project|image needed/);
+      process.env.NODE_ENV = "production";
+      assert.deepEqual(await showcase.listProjectShowcase([]), []);
+      assert.equal(await showcase.getShowcaseWork("luumi"), null);
+      const social = source("app/api/social-card/[slug]/route.tsx");
+      assert.equal((await social.GET(new Request("http://localhost/api/social-card/luumi"), { params: Promise.resolve({ slug: "luumi" }) })).status, 404);
+    });
+  } finally {
+    if (previousMode === undefined) delete process.env.NODE_ENV; else process.env.NODE_ENV = previousMode;
+    if (previousFlag === undefined) delete process.env.SEBGD_DESIGN_PREVIEW; else process.env.SEBGD_DESIGN_PREVIEW = previousFlag;
+  }
+});
+
 test("thoughts-only RSS excludes projects and all drafts, including preview starters", async () => {
   await withLocalStore(async (source) => {
     const store = source("lib/posts.ts");
@@ -442,6 +509,16 @@ test("project filters combine groups and case-insensitive search across titles, 
   assert.deepEqual(filterProjects(cards, "  FINAL   humanity ", "other").map((card) => card.id), ["podcast"]);
   assert.deepEqual(filterProjects(cards, "elements", "all").map((card) => card.id), ["print"]);
   assert.equal(filterProjects(cards, "no match", "all").length, 0);
+});
+
+test("published gallery positions keep Luumi second while preserving the other project order", () => {
+  const { orderProjectCards } = loadSource(path.join(root, "src/lib/project-filters.ts"));
+  const cards = [
+    { id: "magic", title: "Magic Words", galleryPosition: 7 },
+    { id: "luumi", title: "Luumi", galleryPosition: 1 },
+    ...["Letters", "Dojo", "Podcast", "Boat", "Luum", "Schematic"].map((title) => ({ id: title, title })),
+  ];
+  assert.deepEqual(orderProjectCards(cards).map((card) => card.title), ["Letters", "Luumi", "Dojo", "Podcast", "Boat", "Luum", "Schematic", "Magic Words"]);
 });
 
 test("project Instagram links survive publishing and appear on cards and detail pages", async () => {

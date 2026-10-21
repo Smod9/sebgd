@@ -165,6 +165,7 @@ export function AdminPostEditor({ id }: { id: string }) {
 
       {error ? <p className="admin-error">{error}</p> : null}
       {message ? <p className="admin-ok">{message}</p> : null}
+      {type === "work" && typeof post.meta.review_notes === "string" ? <p className="preview-notice">Local preparation notes: {post.meta.review_notes}</p> : null}
 
       <form className="admin-form admin-grid" onSubmit={onSubmit}>
         <div className="admin-span-2"><ThoughtSource meta={post.meta} className="muted tiny" /></div>

@@ -6,9 +6,10 @@ import { EmptyState } from "@/components/EmptyState";
 import { ThoughtQuote } from "@/components/ThoughtQuote";
 import { projectFromPost } from "@/components/ProjectGrid";
 import { listPosts } from "@/lib/posts";
-import { withProjectPreview } from "@/lib/project-preview";
+import { listProjectShowcase } from "@/lib/project-showcase";
 import { isDesignPreview } from "@/lib/design-preview";
 import { listThoughts } from "@/lib/thoughts";
+import { orderProjectCards } from "@/lib/project-filters";
 
 export default async function HomePage({
   searchParams,
@@ -20,7 +21,8 @@ export default async function HomePage({
     listPosts({ type: "work", status: "published" }),
     listThoughts(false),
   ]);
-  const projects = preview ? withProjectPreview(work.map(projectFromPost)) : work.map(projectFromPost);
+  const published = orderProjectCards(work.map(projectFromPost));
+  const projects = preview ? await listProjectShowcase(published) : published;
 
   return (
     <>

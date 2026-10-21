@@ -13,6 +13,10 @@ export type ProjectCard = {
   tags: string[];
   group?: ProjectGroup;
   instagramUrl?: string | null;
+  previewEditId?: string;
+  needsAsset?: boolean;
+  coverPosition?: string;
+  galleryPosition?: number;
 };
 
 export function projectFromPost(post: Post): ProjectCard {
@@ -25,6 +29,8 @@ export function projectFromPost(post: Post): ProjectCard {
     tags: post.tags,
     group: projectGroup(post.tags, post.meta.group),
     instagramUrl: projectUrl(post.meta.instagram_url),
+    coverPosition: typeof post.meta.cover_position === "string" ? post.meta.cover_position : undefined,
+    galleryPosition: typeof post.meta.gallery_position === "number" ? post.meta.gallery_position : undefined,
   };
 }
 
@@ -46,6 +52,7 @@ export function ProjectGrid({ projects }: { projects: ProjectCard[] }) {
                   alt=""
                   fill
                   unoptimized
+                  style={project.coverPosition ? { objectPosition: project.coverPosition } : undefined}
                   sizes="(max-width: 640px) 100vw, (max-width: 960px) 50vw, 33vw"
                 />
               ) : (
@@ -62,6 +69,7 @@ export function ProjectGrid({ projects }: { projects: ProjectCard[] }) {
             </div>
           </Link>
           {projectUrl(project.instagramUrl) ? <a href={projectUrl(project.instagramUrl)!} className="project-social" target="_blank" rel="noopener noreferrer" aria-label={`${project.title} on Instagram`}>Instagram ↗</a> : null}
+          {project.previewEditId ? <p className="project-draft-tools"><span>Local draft{project.needsAsset ? " · image needed" : ""}</span><Link href={`/admin/posts/${encodeURIComponent(project.previewEditId)}`}>Edit project ↗</Link></p> : null}
         </article>
       ))}
     </div>

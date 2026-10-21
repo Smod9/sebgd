@@ -9,7 +9,8 @@
     "lint": "eslint",
     "mcp": "node mcp/src/index.mjs",
     "seed": "node --env-file=.env.local scripts/seed.mjs",
-    "seed:thoughts": "node scripts/seed-thoughts.mjs"
+    "seed:thoughts": "node scripts/seed-thoughts.mjs",
+    "seed:projects": "node scripts/seed-projects.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
