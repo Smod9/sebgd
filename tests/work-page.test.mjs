@@ -221,6 +221,10 @@ test("short thoughts enforce 140 Unicode characters, save drafts, and publish ed
     assert.equal((await store.listPosts({ status: "published" })).length, 1);
     await store.createPost({ type: "note", title: "Older long note", body: "x".repeat(400), status: "published" });
     assert.equal((await store.listPosts({ status: "published" })).length, 2);
+    const excerpt = "A full podcast excerpt. ".repeat(8);
+    await assert.rejects(() => store.createPost({ type: "note", title: "", body: excerpt, meta: { format: "thought", extended_excerpt: true } }), /140 characters/);
+    const full = await store.createPost({ type: "note", title: "", body: excerpt, meta: { format: "thought", extended_excerpt: true, source_kind: "edited_transcript_excerpt" } });
+    assert.equal(full.body, excerpt.trim());
   });
 });
 
@@ -322,9 +326,9 @@ test("starter seeding creates 15 thoughts and three attributed podcast drafts, p
   }
   const podcasts = JSON.parse(readFileSync(path.join(root, "content/podcast-thought-starters.json"), "utf8"));
   assert.equal(podcasts.length, 3);
-  for (const { slug, body, timestamp } of podcasts) {
+  for (const { slug, body, timestamp, extended_excerpt } of podcasts) {
     const text = readFileSync(path.join(directory, "content/posts", `${slug}.md`), "utf8");
-    assert.ok(Array.from(body).length <= 140);
+    assert.ok(extended_excerpt || Array.from(body).length <= 140);
     assert.equal(text.split("---\n").at(-1).trim(), body);
     assert.match(text, /status: "draft"/);
     assert.match(text, /published_at: null/);
@@ -522,7 +526,7 @@ test("homepage features only the newest published thought as a pull quote, even 
     assert.match(html, /href="\/stream"/);
     assert.doesNotMatch(html, /An older published thought|A private new draft|A few things I’ve thunk/);
     const stream = await renderPage([], "stream/page.tsx");
-    assert.match(stream, /A few things I’ve thunk\./);
+    assert.match(stream, /href="\/rss.xml\?type=note"/);
   } finally {
     if (previousMode === undefined) delete process.env.NODE_ENV; else process.env.NODE_ENV = previousMode;
     if (previousFlag === undefined) delete process.env.SEBGD_DESIGN_PREVIEW; else process.env.SEBGD_DESIGN_PREVIEW = previousFlag;

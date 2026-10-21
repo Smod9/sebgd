@@ -7,7 +7,7 @@ import { useAdminToken } from "@/components/admin/AdminGate";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { ProjectFields, type ProjectFieldsValue } from "@/components/admin/ProjectFields";
 import { ThoughtSource } from "@/components/ThoughtSource";
-import { characterCount, THOUGHT_LIMIT, thoughtTitle } from "@/lib/publishing";
+import { characterCount, THOUGHT_LIMIT, thoughtTitle, isExtendedExcerpt } from "@/lib/publishing";
 import {
   deleteAdminPost,
   getAdminPost,
@@ -224,7 +224,7 @@ export function AdminPostEditor({ id }: { id: string }) {
           />
         </label> : null}
         <label className="admin-label admin-span-2">
-          {type === "note" && post.meta.format === "thought" ? "Thought · 140 characters" : "Body (markdown)"}
+          {type === "note" && post.meta.format === "thought" ? isExtendedExcerpt(post.meta) ? "Podcast excerpt" : "Thought · 140 characters" : "Body (markdown)"}
           <textarea
             className="admin-input admin-textarea admin-textarea-lg"
             value={body}
@@ -232,7 +232,7 @@ export function AdminPostEditor({ id }: { id: string }) {
             rows={16}
           />
         </label>
-        {type === "note" && post.meta.format === "thought" ? <p className="muted tiny">{characterCount(body)} / {THOUGHT_LIMIT}</p> : null}
+        {type === "note" && post.meta.format === "thought" ? <p className="muted tiny">{characterCount(body)}{isExtendedExcerpt(post.meta) ? " characters" : ` / ${THOUGHT_LIMIT}`}</p> : null}
 
         <div className="admin-span-2">
           <ImageUploadField

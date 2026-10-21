@@ -33,14 +33,15 @@ for (const [index, body] of starters.entries()) {
     }
   }
 }
-for (const { slug, body, timestamp } of podcastStarters) {
-  if (Array.from(body).length > 140) throw new Error(`Podcast starter ${slug} exceeds 140 characters`);
+for (const { slug, body, timestamp, extended_excerpt } of podcastStarters) {
+  if (!extended_excerpt && Array.from(body).length > 140) throw new Error(`Podcast starter ${slug} exceeds 140 characters`);
   const meta = {
     format: "thought", starter: true, created_at: new Date().toISOString(),
     source_title: "Final Draft episode 004 · Human minds, artificial minds, and alignment",
     source_published_date: "2026-10-08", source_timestamp: timestamp,
     source_url: "https://podcasts.apple.com/us/podcast/human-minds-artificial-minds-and-alignment/id6815796268?i=1000793763787",
-    source_kind: "edited_transcript_excerpt", context_editorial: true,
+    source_kind: "edited_transcript_excerpt", context_editorial: body.includes("["),
+    ...(extended_excerpt ? { extended_excerpt: true } : {}),
     recording_date: null, speaker_verification: "unlabeled transcript; not audio-verified",
   };
   const frontmatter = { id: slug, slug, title: Array.from(body).slice(0, 60).join(""), type: "note", status: "draft", published_at: null, meta };

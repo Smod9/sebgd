@@ -6,7 +6,7 @@ export function ThoughtSource({ meta, className = "thought-source" }: { meta: Re
   const context = <>
     {typeof meta.source_published_date === "string" ? <> · Episode published <time dateTime={meta.source_published_date}>{meta.source_published_date}</time></> : null}
     {typeof meta.source_timestamp === "string" ? <> · {meta.source_timestamp}</> : null}
-    {meta.source_kind === "edited_transcript_excerpt" ? <> · Edited excerpt; bracketed context added.</> : null}
+    {meta.source_kind === "edited_transcript_excerpt" ? <> · Edited excerpt{meta.context_editorial !== false ? "; bracketed context added" : ""}.</> : null}
   </>;
   return <>
     <p className={`${className} thought-source-desktop`}>{title}{context}</p>
