@@ -33,6 +33,7 @@ export const PROJECT_PREVIEW: ProjectCard[] = [
     title: "The boat",
     description: "Bon Vivant. A refit, a logbook, and plenty of systems to work on.",
     href: "/boat",
+    instagramUrl: "https://www.instagram.com/thebonvivantproject/",
     cover: "/projects/bon-vivant.jpg",
     tags: ["Ongoing", "Bon Vivant"],
   },
