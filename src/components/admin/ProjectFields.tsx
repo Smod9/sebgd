@@ -1,6 +1,6 @@
 "use client";
 
-export type ProjectFieldsValue = { summary: string; demoUrl: string; repoUrl: string; tags: string; group: string; instagramUrl: string };
+export type ProjectFieldsValue = { summary: string; demoUrl: string; repoUrl: string; tags: string; group: string; instagramUrl: string; learnings: string };
 
 export function ProjectFields({ value, onChange }: { value: ProjectFieldsValue; onChange: (value: ProjectFieldsValue) => void }) {
   const field = (key: keyof ProjectFieldsValue, text: string) => onChange({ ...value, [key]: text });
@@ -29,7 +29,11 @@ export function ProjectFields({ value, onChange }: { value: ProjectFieldsValue; 
           <option value="other">Other stuff</option>
         </select>
       </label>
-      <p className="muted tiny admin-span-2">Upload a 1200 × 630 cover, or leave it blank for an automatic social card. Other photos crop to fit.</p>
+      <label className="admin-label admin-span-2">What I learned (optional)
+        <textarea className="admin-input" rows={5} value={value.learnings} onChange={(e) => field("learnings", e.target.value)} placeholder="What surprised you? What worked? What would you do differently?" />
+        <span className="muted tiny">Supports Markdown. Appears on the project page when filled in.</span>
+      </label>
+      <p className="muted tiny admin-span-2">Use the project website’s official social-card image as its cover when available. Otherwise upload a 1200 × 630 image, or leave it blank for an automatic card.</p>
     </div>
   );
 }

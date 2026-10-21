@@ -76,7 +76,9 @@ Open `/write` and unlock the existing admin with `SEBGD_ADMIN_TOKEN`.
   into the cover field. Use an uploaded image when there is no official social card. Without a
   cover, `/api/social-card/<slug>` generates a 1200 × 630 PNG automatically.
   Save a draft or publish; published projects appear on the homepage and Projects.
-  Project pages include demo/source links and social-sharing image metadata.
+  Project pages lead with a large cover preview, a short description, and website/source links.
+  Add **What I learned** to capture surprises, firsts, or what you would do differently;
+  it supports Markdown and appears as its own section only when filled in.
 - Choose **Thought · 140 characters**. Write the thought without a title; the
   live counter and server enforce the limit for new short thoughts. Save a draft
   or post. The latest published thought appears as a homepage pull quote; `/stream` shows the full grid.

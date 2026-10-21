@@ -240,7 +240,28 @@ test("project pipeline keeps metadata, uses the automatic card, and hides drafts
     const html = renderToStaticMarkup(await Detail({ params: Promise.resolve({ slug: draft.slug }) }));
     assert.match(html, /href="https:\/\/example.com\/demo"/);
     assert.match(html, /Source code/);
+    assert.match(html, /src="\/api\/social-card\/new-tool"/);
+    assert.doesNotMatch(html, /What I learned/);
     await assert.rejects(() => store.updatePost({ id: post.id }, { meta: { demo_url: "javascript:alert(1)" } }), /http or https/);
+  });
+});
+
+test("project pages show the official preview and saved lessons without inventing empty sections", async () => {
+  await withLocalStore(async (source) => {
+    const store = source("lib/posts.ts");
+    const post = await store.createPost({ type: "work", slug: "community", title: "Community project", body: "The project story.", status: "published", cover_blob_url: "https://example.com/official-card.png", meta: { summary: "A place for the fleet.", demo_url: "https://example.com/", learnings: "My first **community** site.\n\n- Dynamic social cards\n- Keep things simple" } });
+    const { default: Detail } = source("app/work/[slug]/page.tsx");
+    const html = renderToStaticMarkup(await Detail({ params: Promise.resolve({ slug: post.slug }) }));
+    assert.match(html, /src="https:\/\/example.com\/official-card.png"/);
+    assert.match(html, /aria-label="Visit Community project"/);
+    assert.match(html, /A place for the fleet\./);
+    assert.match(html, /What I learned/);
+    assert.match(html, /<strong>community<\/strong>/);
+    assert.match(html, /<li>Dynamic social cards<\/li>/);
+    await store.updatePost({ id: post.id }, { meta: { ...post.meta, learnings: "  " } });
+    const empty = renderToStaticMarkup(await Detail({ params: Promise.resolve({ slug: post.slug }) }));
+    assert.doesNotMatch(empty, /What I learned/);
+    assert.match(empty, /The project story\./);
   });
 });
 

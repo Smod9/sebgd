@@ -9,7 +9,8 @@
     "cover": "https://luum.io/luumi/opengraph-image",
     "position": 1,
     "review_notes": "Uses Luumi’s official website and social card supplied by Sebastien.",
-    "demo_url": "https://luum.io/luumi"
+    "demo_url": "https://luum.io/luumi",
+    "learnings": "My first native Mac app. I learned about NSPanel and how to make a floating, ever-present entity.\n\nI also figured out connections to the Apple ecosystem—Calendar, Music, and the rest—plus automatic updates.\n\nAnd it was the first real sales landing page for a piece of software I'd written."
   },
   {
     "slug": "magic-words",
@@ -73,7 +74,8 @@
     "cover": "/projects/hotfoot-sailing.jpg",
     "cover_position": "center 85%",
     "demo_url": "https://hotfootsailing.com/",
-    "review_notes": "Uses an existing public fleet photograph. The documented website URL has not been live-checked; no private submissions or contact data included."
+    "review_notes": "Uses an existing public fleet photograph. The documented website URL has not been live-checked; no private submissions or contact data included.",
+    "learnings": "This was the first project where I used dynamic social cards, and the first community page I built. Not a ton of new stuff on this one, but a couple of firsts."
   },
   {
     "slug": "seb-x-seb",
