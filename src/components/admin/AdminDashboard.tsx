@@ -208,6 +208,8 @@ export function AdminDashboard() {
         </p>
       </header>
 
+      <Link href="/admin/sites" className="btn btn-secondary">Publish a static site ↗</Link>
+
       {error ? <p className="admin-error">{error}</p> : null}
       {message ? <p className="admin-ok">{message}</p> : null}
 

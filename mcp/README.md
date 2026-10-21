@@ -12,6 +12,14 @@ Manage posts on [sebgd.com](https://sebgd.com) from Cursor via the protected adm
 - `delete_post` — soft-delete
 - `set_now` — replace About/Now bullets
 - `upload_image` — Vercel Blob (`BLOB_READ_WRITE_TOKEN`)
+- `list_sites` — static subdomains, publication state, and revisions
+- `publish_site` — publish HTML/assets at `<name>.sebgd.com`; use `revision: null` for a new site or the current revision from `list_sites` to replace one
+- `unpublish_site` — take a subdomain offline using its current revision
+
+Static sites need `index.html` at the root and support up to 100 files / 3 MB.
+`publish_site` accepts `files: [{ path, content_base64 }]` and optional `spa: true`
+for client-side routes. Reload the current revision after a `409`; do not blindly
+retry a stale write. Existing app subdomains are reserved.
 
 ## Cursor MCP config
 
