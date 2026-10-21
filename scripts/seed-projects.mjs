@@ -12,7 +12,7 @@ let created = 0;
 for (const [index, item] of items.entries()) {
   if (existing.some((post) => post.slug === item.slug || (post.type === "work" && String(post.title).toLowerCase() === item.title.toLowerCase()))) continue;
   const meta = {
-    summary: item.summary, group: item.group, demo_url: item.demo_url || "",
+    summary: item.summary, learnings: item.learnings || "", group: item.group, demo_url: item.demo_url || "",
     showcase_preview: true, showcase_order: index, showcase_position: item.position,
     asset_needed: Boolean(item.asset_needed), review_notes: item.review_notes,
     cover_position: item.cover_position,

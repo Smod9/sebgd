@@ -7,6 +7,6 @@ status: "draft"
 published_at: null
 tags: ["Software","Sailing"]
 cover_blob_url: "/projects/hotfoot-sailing.jpg"
-meta: {"summary":"A home for the Hotfoot fleet: boats, photographs, race reports, and events.","group":"software","demo_url":"https://fleet.sebgd.com/","showcase_preview":true,"showcase_order":6,"asset_needed":false,"review_notes":"Uses an existing public fleet photograph. The documented website URL has not been live-checked; no private submissions or contact data included.","cover_position":"center 85%"}
+meta: {"summary":"A home for the Hotfoot fleet: boats, photographs, race reports, and events.","group":"software","demo_url":"https://fleet.sebgd.com/","showcase_preview":true,"showcase_order":6,"asset_needed":false,"review_notes":"Uses an existing public fleet photograph. The documented website URL has not been live-checked; no private submissions or contact data included.","cover_position":"center 85%","learnings":"This was the first project where I used dynamic social cards, and the first community page I built. Not a ton of new stuff on this one, but a couple of firsts."}
 ---
 A sailing community website with a fleet registry, photographs, race reports, and an event board.

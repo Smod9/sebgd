@@ -52,7 +52,7 @@ export function AdminDashboard() {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [coverUrl, setCoverUrl] = useState("");
-  const [project, setProject] = useState<ProjectFieldsValue>({ summary: "", demoUrl: "", repoUrl: "", tags: "", group: "", instagramUrl: "" });
+  const [project, setProject] = useState<ProjectFieldsValue>({ summary: "", demoUrl: "", repoUrl: "", tags: "", group: "", instagramUrl: "", learnings: "" });
 
   const reload = useCallback(async () => {
     try {
@@ -104,7 +104,7 @@ export function AdminDashboard() {
     setError(null);
     setMessage(null);
     try {
-      const meta = type === "note" ? { format: "thought" } : type === "work" ? { summary: project.summary.trim(), demo_url: project.demoUrl.trim(), repo_url: project.repoUrl.trim(), group: project.group, instagram_url: project.instagramUrl.trim() } : undefined;
+      const meta = type === "note" ? { format: "thought" } : type === "work" ? { summary: project.summary.trim(), demo_url: project.demoUrl.trim(), repo_url: project.repoUrl.trim(), group: project.group, instagram_url: project.instagramUrl.trim(), learnings: project.learnings.trim() } : undefined;
       validatePostContent({ type, body: body.trim(), meta });
       const { post } = await createAdminPost(token, {
         type,
@@ -119,7 +119,7 @@ export function AdminDashboard() {
       setBody("");
       setCoverUrl("");
       setType("note");
-      setProject({ summary: "", demoUrl: "", repoUrl: "", tags: "", group: "", instagramUrl: "" });
+      setProject({ summary: "", demoUrl: "", repoUrl: "", tags: "", group: "", instagramUrl: "", learnings: "" });
       setMessage(
         as === "published"
           ? `Published “${post.title}”.`

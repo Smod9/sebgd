@@ -578,3 +578,29 @@ button, input, textarea, select { font: inherit; }
 .project-card { display: flex; flex-direction: column; }
 .project-link { height: auto; }
 .project-social { align-self: flex-start; margin-top: 12px; color: var(--color-muted); font-size: 12px; text-decoration: none; }
+
+/* Project pages: the work up front, with room for its story. */
+.project-page { padding-top: 24px; }
+.project-back { display: inline-block; margin-bottom: 28px; }
+.project-overview { padding-bottom: 40px; }
+.project-overview.has-preview { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.3fr); gap: 40px; align-items: center; }
+.project-introduction .page-intro { padding: 0; }
+.project-introduction .page-intro h1 { font-size: clamp(36px, 4.5vw, 58px); }
+.project-introduction .kicker { margin-bottom: 14px; }
+.project-introduction .page-intro-copy { margin-top: 18px; font-size: 16px; }
+.project-introduction .page-intro-copy p { margin: 0; }
+.project-detail-links { margin-top: 24px; gap: 10px; }
+.project-preview { display: block; min-width: 0; overflow: hidden; border: 1px solid var(--color-line); border-radius: 12px; background: #fff; text-decoration: none; }
+.project-preview img { display: block; width: 100%; height: auto; aspect-ratio: 1200 / 630; object-fit: cover; }
+.project-preview-caption { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 12px 16px; border-top: 1px solid var(--color-line); color: var(--color-muted); font-size: 12px; }
+.project-story { padding-top: 32px; border-top: 1px solid var(--color-line); }
+.project-story.has-lessons { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; }
+.project-story .body-html { font-size: 16px; }
+.project-story .body-html > :first-child { margin-top: 0; }
+.project-story .body-html > :last-child { margin-bottom: 0; }
+.project-lessons h2 { margin: 0 0 18px; font-size: 22px; font-weight: 500; letter-spacing: -.035em; }
+@media (max-width: 800px) {
+  .project-overview.has-preview { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .project-story.has-lessons { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .project-lessons { padding-top: 28px; border-top: 1px solid var(--color-line); }
+}

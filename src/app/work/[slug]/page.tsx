@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageIntro } from "@/components/PageChrome";
@@ -45,23 +46,38 @@ export default async function WorkDetailPage({ params }: Props) {
     stub?.blurb ||
     "More soon — this page is a stub until there is something worth keeping.";
   const html = await renderMarkdown(body);
+  const website = projectUrl(post?.meta.demo_url);
+  const repository = projectUrl(post?.meta.repo_url);
+  const instagram = projectUrl(post?.meta.instagram_url);
+  const summary = typeof post?.meta.summary === "string" ? post.meta.summary : "";
+  const lessons = typeof post?.meta.learnings === "string" ? post.meta.learnings.trim() : "";
+  const lessonsHtml = lessons ? await renderMarkdown(lessons) : "";
+  const cover = post ? post.cover_blob_url || `/api/social-card/${encodeURIComponent(post.slug)}` : null;
+  const preview = cover ? <Image src={cover} alt={`${title} project preview`} width={1200} height={630} unoptimized sizes="(max-width: 800px) 100vw, 60vw" style={{ objectPosition: typeof post?.meta.cover_position === "string" ? post.meta.cover_position : undefined }} /> : null;
 
   return (
-    <article className="article-page">
+    <article className="article-page project-page">
       {post?.status === "draft" ? <p className="preview-notice">Local project draft · not published. <Link href={`/admin/posts/${encodeURIComponent(post.id)}`}>Edit project ↗</Link></p> : null}
-      <PageIntro kicker={`Work · ${status}`} title={title}>
-        <p>
-          <Link href="/work" className="text-link">
-            All work
-          </Link>
-        </p>
-      </PageIntro>
-      {post ? <div className="cta-group project-detail-links">
-        {projectUrl(post.meta.demo_url) ? <a href={projectUrl(post.meta.demo_url)!} className="btn btn-primary" target="_blank" rel="noopener noreferrer">Open project ↗</a> : null}
-        {projectUrl(post.meta.instagram_url) ? <a href={projectUrl(post.meta.instagram_url)!} className="btn btn-secondary" target="_blank" rel="noopener noreferrer">Instagram ↗</a> : null}
-        {projectUrl(post.meta.repo_url) ? <a href={projectUrl(post.meta.repo_url)!} className="btn btn-secondary" target="_blank" rel="noopener noreferrer">Source code ↗</a> : null}
-      </div> : null}
-      <div className="body-html" dangerouslySetInnerHTML={{ __html: html }} />
+      <Link href="/work" className="quiet-link project-back">← All projects</Link>
+      <div className={`project-overview${cover ? " has-preview" : ""}`}>
+        <div className="project-introduction">
+          <PageIntro kicker={post?.tags.length ? post.tags.join(" / ") : status} title={title}>
+            {summary ? <p>{summary}</p> : null}
+          </PageIntro>
+          {post ? <div className="cta-group project-detail-links">
+            {website ? <a href={website} className="btn btn-primary" target="_blank" rel="noopener noreferrer">Open project ↗</a> : null}
+            {instagram ? <a href={instagram} className="btn btn-secondary" target="_blank" rel="noopener noreferrer">Instagram ↗</a> : null}
+            {repository ? <a href={repository} className="btn btn-secondary" target="_blank" rel="noopener noreferrer">Source code ↗</a> : null}
+          </div> : null}
+        </div>
+        {preview ? website ? <a className="project-preview" href={website} target="_blank" rel="noopener noreferrer" aria-label={`Visit ${title}`}>
+          {preview}<span className="project-preview-caption"><span>{new URL(website).hostname.replace(/^www\./, "")}</span><span aria-hidden="true">↗</span></span>
+        </a> : <div className="project-preview">{preview}</div> : null}
+      </div>
+      <div className={`project-story${lessons ? " has-lessons" : ""}`}>
+        <section className="project-details" aria-label="Project details"><div className="body-html" dangerouslySetInnerHTML={{ __html: html }} /></section>
+        {lessons ? <section className="project-lessons" aria-labelledby="lessons-title"><h2 id="lessons-title">What I learned</h2><div className="body-html" dangerouslySetInnerHTML={{ __html: lessonsHtml }} /></section> : null}
+      </div>
     </article>
   );
 }
