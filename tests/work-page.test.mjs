@@ -243,16 +243,16 @@ async function withLocalStore(run) {
   }
 }
 
-test("short thoughts enforce 140 Unicode characters, save drafts, and publish edited text", async () => {
+test("short thoughts enforce 280 Unicode characters, save drafts, and publish edited text", async () => {
   await withLocalStore(async (source) => {
     const store = source("lib/posts.ts");
-    const input = { type: "note", title: "", body: "🙂".repeat(140), meta: { format: "thought" }, status: "draft" };
+    const input = { type: "note", title: "", body: "🙂".repeat(280), meta: { format: "thought" }, status: "draft" };
     const draft = await store.createPost(input);
     assert.match(draft.slug, /^thought-/);
     assert.equal(draft.published_at, null);
     assert.equal((await store.listPosts({ status: "published" })).length, 0);
-    await assert.rejects(() => store.createPost({ ...input, body: "🙂".repeat(141) }), /140 characters/);
-    await assert.rejects(() => store.updatePost({ id: draft.id }, { body: "x".repeat(141) }), /140 characters/);
+    await assert.rejects(() => store.createPost({ ...input, body: "🙂".repeat(281) }), /280 characters/);
+    await assert.rejects(() => store.updatePost({ id: draft.id }, { body: "x".repeat(281) }), /280 characters/);
     const published = await store.updatePost({ id: draft.id }, { body: "The edited thought.", status: "published" });
     assert.equal(published.body, "The edited thought.");
     assert.equal(published.title, "The edited thought.");
@@ -260,8 +260,8 @@ test("short thoughts enforce 140 Unicode characters, save drafts, and publish ed
     assert.equal((await store.listPosts({ status: "published" })).length, 1);
     await store.createPost({ type: "note", title: "Older long note", body: "x".repeat(400), status: "published" });
     assert.equal((await store.listPosts({ status: "published" })).length, 2);
-    const excerpt = "A full podcast excerpt. ".repeat(8);
-    await assert.rejects(() => store.createPost({ type: "note", title: "", body: excerpt, meta: { format: "thought", extended_excerpt: true } }), /140 characters/);
+    const excerpt = "A full podcast excerpt. ".repeat(16);
+    await assert.rejects(() => store.createPost({ type: "note", title: "", body: excerpt, meta: { format: "thought", extended_excerpt: true } }), /280 characters/);
     const full = await store.createPost({ type: "note", title: "", body: excerpt, meta: { format: "thought", extended_excerpt: true, source_kind: "edited_transcript_excerpt" } });
     assert.equal(full.body, excerpt.trim());
   });
@@ -529,6 +529,14 @@ test("shared thoughts supply quote metadata and a real 1200x630 PNG while keepin
       assert.equal(metadata.twitter.card, "summary_large_image");
       const html = renderToStaticMarkup(await page.default(props("greg-egan")));
       assert.match(html, /Diaspora by Greg Egan/);
+      const education = "Writing helped build civilization. But was it GOOD writing, or just being able to store ideas outside our heads? We needed nonvolatile memory, not perfect prose. Maybe AI will force schools to focus more on teaching us to think, and less on how well we write it down.";
+      await store.createPost({ type: "note", slug: "nonvolatile-memory", title: "", body: education, status: "published", published_at: "2026-10-21T19:00:00.000Z", meta: { format: "thought", source_kind: "paraphrase", source_title: "Final Draft episode 006", source_url: "https://finaldraftpod.com/episodes/s01e06", source_published_date: "2026-10-21", source_timestamp: "34:10; 35:59" } });
+      assert.equal((await page.generateMetadata(props("nonvolatile-memory"))).openGraph.description, education);
+      const educationHtml = renderToStaticMarkup(await page.default(props("nonvolatile-memory")));
+      assert.ok(educationHtml.includes(education));
+      assert.match(educationHtml, /href="https:\/\/finaldraftpod.com\/episodes\/s01e06"/);
+      assert.match(educationHtml, /Paraphrase\./);
+      assert.match(educationHtml, /Oct 21, 2026/);
       const response = await image.GET(new Request("http://localhost/api/thought-social-card/greg-egan"), props("greg-egan"));
       assert.match(response.headers.get("content-type"), /image\/png/);
       const png = Buffer.from(await response.arrayBuffer());

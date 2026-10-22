@@ -14,3 +14,11 @@ Seb wants requested sebgd.com changes pushed live by default after practical che
 and public-site verification. Cosmetic imperfections do not require another approval.
 Keep unrelated changes and private data out of releases. This preference does not
 authorize credential/security changes, new agreements, paid plans, or unrelated content.
+
+## Thoughts editorial preferences
+
+As of October 22, 2026, Seb wants a 280-character maximum for future Thoughts,
+replacing the earlier 140-character rule. Do not truncate existing entries.
+Preserve his in-progress Thoughts document edits and publish only content he has
+approved. The education/nonvolatile-memory thought was approved on October 22,
+2026, with an October 21 Pacific date and episode 006 paraphrase provenance.

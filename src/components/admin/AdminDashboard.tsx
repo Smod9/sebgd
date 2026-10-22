@@ -225,7 +225,7 @@ export function AdminDashboard() {
               >
                 {COMPOSE_TYPES.map((t) => (
                   <option key={t} value={t}>
-                    {t === "note" ? "Thought · 140 characters" : t === "work" ? "Project" : t === "essay" ? "Longer writing" : t}
+                    {t === "note" ? `Thought · ${THOUGHT_LIMIT} characters` : t === "work" ? "Project" : t === "essay" ? "Longer writing" : t}
                   </option>
                 ))}
               </select>

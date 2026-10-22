@@ -7,6 +7,7 @@ import { PostList } from "@/components/PostList";
 import { ThoughtGrid } from "@/components/ThoughtGrid";
 import { listPosts } from "@/lib/posts";
 import { listThoughts } from "@/lib/thoughts";
+import { THOUGHT_LIMIT } from "@/lib/publishing";
 
 export const metadata: Metadata = {
   title: "Thoughts",
@@ -24,7 +25,7 @@ export default async function StreamPage() {
     <>
       <PageIntro kicker="Thoughts" title="A few thinks I’ve thunk.">
         <p>
-          Things I’m building, learning, and thinking about. Usually in 140 characters.
+          Things I’m building, learning, and thinking about. Usually in {THOUGHT_LIMIT} characters.
         </p>
         <a href="/rss.xml?type=note" className="quiet-link">Subscribe to thoughts via RSS ↗</a>
       </PageIntro>
