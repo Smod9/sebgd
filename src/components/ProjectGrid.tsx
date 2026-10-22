@@ -1,4 +1,5 @@
 import { projectUrl } from "@/lib/publishing";
+import { projectSummary } from "@/lib/project-descriptions";
 import { projectGroup, type ProjectGroup } from "@/lib/project-filters";
 import Image from "next/image";
 import Link from "next/link";
@@ -23,7 +24,7 @@ export function projectFromPost(post: Post): ProjectCard {
   return {
     id: post.id,
     title: post.title,
-    description: typeof post.meta.summary === "string" && post.meta.summary ? post.meta.summary : post.body.split("\n\n")[0],
+    description: projectSummary(typeof post.meta.summary === "string" && post.meta.summary.trim() ? post.meta.summary : post.body.split("\n\n")[0]),
     href: `/work/${post.slug}`,
     cover: post.cover_blob_url || `/api/social-card/${encodeURIComponent(post.slug)}`,
     tags: post.tags,
@@ -65,7 +66,7 @@ export function ProjectGrid({ projects }: { projects: ProjectCard[] }) {
                 <p className="project-category">{project.tags.slice(0, 2).join(" / ")}</p>
               ) : null}
               <h2>{project.title}</h2>
-              {project.description ? <p className="project-description">{project.description}</p> : null}
+              {project.description ? <p className="project-description">{projectSummary(project.description)}</p> : null}
             </div>
           </Link>
           {projectUrl(project.instagramUrl) ? <a href={projectUrl(project.instagramUrl)!} className="project-social" target="_blank" rel="noopener noreferrer" aria-label={`${project.title} on Instagram`}>Instagram ↗</a> : null}

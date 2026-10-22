@@ -72,6 +72,45 @@ async function renderPage(posts, page = "work/page.tsx", query = {}) {
 
 const renderWork = (posts) => renderPage(posts);
 
+test("overview descriptions stay bounded while the project page retains the full story", async () => {
+  const full = "A project with a much longer story about what it does, who it helps, and how it was built. ".repeat(5).trim();
+  for (const meta of [{ summary: full }, { summary: "   " }]) {
+    const fixture = project("long-story", { body: full, meta });
+    for (const page of ["page.tsx", "work/page.tsx"]) {
+      const html = await renderPage([fixture], page);
+      const overview = html.match(/class="project-description">([^<]+)<\/p>/)?.[1];
+      assert.ok(overview);
+      assert.ok(Array.from(overview).length <= 160);
+      assert.ok(overview.endsWith("…"));
+      assert.ok(!html.includes(full));
+    }
+    await withLocalStore(async (source) => {
+      // Load legacy content directly to verify that rendering never truncates it in storage.
+      const { createMarkdownPost } = source("lib/markdown-store.ts");
+      await createMarkdownPost(fixture);
+      const { default: Detail } = source("app/work/[slug]/page.tsx");
+      const detail = renderToStaticMarkup(await Detail({ params: Promise.resolve({ slug: fixture.slug }) }));
+      assert.ok(detail.includes(full));
+    });
+  }
+});
+
+test("project writes limit short descriptions to 160 Unicode characters and preserve long descriptions", async () => {
+  await withLocalStore(async (source) => {
+    const store = source("lib/posts.ts");
+    const body = "The full project description. ".repeat(40).trim();
+    const input = { type: "work", title: "A project", body, meta: { summary: "🙂".repeat(160) } };
+    const post = await store.createPost(input);
+    assert.equal(post.body, body);
+    assert.equal(post.meta.summary, input.meta.summary);
+    await assert.rejects(() => store.createPost({ ...input, title: "Too long", meta: { summary: "🙂".repeat(161) } }), /short descriptions.*160 characters/);
+    await assert.rejects(() => store.updatePost({ id: post.id }, { meta: { summary: "x".repeat(161) } }), /short descriptions.*160 characters/);
+    const updated = await store.updatePost({ id: post.id }, { meta: { summary: "A concise introduction." } });
+    assert.equal(updated.body, body);
+    assert.equal(updated.meta.summary, "A concise introduction.");
+  });
+});
+
 function project(slug, overrides = {}) {
   return {
     id: slug,

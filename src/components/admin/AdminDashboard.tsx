@@ -247,7 +247,7 @@ export function AdminDashboard() {
           {type === "work" ? <label className="admin-label">Cover image URL (optional)<input type="url" className="admin-input" value={coverUrl} onChange={(e) => setCoverUrl(e.target.value)} placeholder="Paste an existing social-card URL, or upload below" /></label> : null}
 
           <label className="admin-label">
-            {type === "note" ? "Thought" : "Details (markdown)"}
+            {type === "note" ? "Thought" : type === "work" ? "Long description (markdown)" : "Details (markdown)"}
             <textarea
               className="admin-input admin-textarea admin-textarea-compose"
               value={body}

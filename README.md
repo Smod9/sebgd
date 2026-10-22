@@ -148,6 +148,11 @@ Image uploads require the existing Vercel Blob token; automatic social cards
 and text publishing do not. On Vercel, persistent authored posts require Neon;
 local Markdown writes are intended for local work and committed content.
 
+Projects have a short description (`meta.summary`, at most 160 Unicode characters)
+for overview cards and a separate long description (`body`, Markdown) for the
+project page. Cards show at most three lines. Older summaries and first-paragraph
+fallbacks are capped for display without altering the stored long description.
+
 Checks: `node --test tests/work-page.test.mjs`, `npx tsc --noEmit`, and
 `npm run build`. Use `DATABASE_URL=''` for a build or preview against local
 Markdown content without accessing Neon.

@@ -1,13 +1,17 @@
 "use client";
 
+import { PROJECT_SUMMARY_LIMIT } from "@/lib/project-descriptions";
+
 export type ProjectFieldsValue = { summary: string; demoUrl: string; repoUrl: string; tags: string; group: string; instagramUrl: string; learnings: string };
 
 export function ProjectFields({ value, onChange }: { value: ProjectFieldsValue; onChange: (value: ProjectFieldsValue) => void }) {
   const field = (key: keyof ProjectFieldsValue, text: string) => onChange({ ...value, [key]: text });
+  const summaryLength = Array.from(value.summary.trim()).length;
   return (
     <div className="admin-grid project-fields">
       <label className="admin-label admin-span-2">Short description
-        <textarea className="admin-input" rows={2} maxLength={220} value={value.summary} onChange={(e) => field("summary", e.target.value)} placeholder="What does this do, and who is it for?" />
+        <textarea className="admin-input" rows={2} value={value.summary} onChange={(e) => field("summary", e.target.value)} aria-invalid={summaryLength > PROJECT_SUMMARY_LIMIT} placeholder="What does this do, and who is it for?" />
+        <span className={summaryLength > PROJECT_SUMMARY_LIMIT ? "admin-error tiny" : "muted tiny"}>{summaryLength} / {PROJECT_SUMMARY_LIMIT} characters · Shown on project cards. Use the long description for the full story.</span>
       </label>
       <label className="admin-label">Demo or website URL
         <input className="admin-input" type="url" value={value.demoUrl} onChange={(e) => field("demoUrl", e.target.value)} placeholder="https://…" />

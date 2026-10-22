@@ -1,4 +1,5 @@
 import type { PostInput } from "@/lib/types";
+import { PROJECT_SUMMARY_LIMIT } from "@/lib/project-descriptions";
 
 export const THOUGHT_LIMIT = 140;
 export const characterCount = (text: string) => Array.from(text).length;
@@ -23,6 +24,9 @@ export function validatePostContent(input: Pick<PostInput, "type" | "body" | "me
     if (!isExtendedExcerpt(input.meta) && characterCount(input.body.trim()) > THOUGHT_LIMIT) throw new Error("Thoughts are limited to 140 characters.");
   }
   if (input.type === "work") {
+    if (typeof input.meta?.summary === "string" && characterCount(input.meta.summary.trim()) > PROJECT_SUMMARY_LIMIT) {
+      throw new Error(`Project short descriptions are limited to ${PROJECT_SUMMARY_LIMIT} characters. Put the full description in the long description field.`);
+    }
     for (const key of ["demo_url", "repo_url", "instagram_url"]) {
       if (input.meta?.[key] && !projectUrl(input.meta[key])) throw new Error("Project links must be valid http or https URLs.");
     }

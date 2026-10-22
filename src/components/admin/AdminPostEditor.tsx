@@ -224,7 +224,7 @@ export function AdminPostEditor({ id }: { id: string }) {
           />
         </label> : null}
         <label className="admin-label admin-span-2">
-          {type === "note" && post.meta.format === "thought" ? isExtendedExcerpt(post.meta) ? "Podcast excerpt" : "Thought · 140 characters" : "Body (markdown)"}
+          {type === "note" && post.meta.format === "thought" ? isExtendedExcerpt(post.meta) ? "Podcast excerpt" : "Thought · 140 characters" : type === "work" ? "Long description (markdown)" : "Body (markdown)"}
           <textarea
             className="admin-input admin-textarea admin-textarea-lg"
             value={body}

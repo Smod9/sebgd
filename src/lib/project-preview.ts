@@ -22,7 +22,7 @@ export const PROJECT_PREVIEW: ProjectCard[] = [
   {
     id: "preview-final-draft",
     title: "Final Draft",
-    description: "Final Draft is Sebastien and Eric thinking out loud about AI, humanity, and the companies they can't seem to stop starting. They're experienced leaders, serial entrepreneurs, and AI superusers who put new tools to work in real life. Expect candid conversations about what AI makes possible, what still takes human judgment, and the ideas that might become their next venture.",
+    description: "Sebastien and Eric thinking out loud about AI, humanity, and the companies they can't seem to stop starting.",
     href: "https://pod.sebgd.com/",
     cover: "/projects/final-draft.png",
     tags: ["Podcast", "AI & humanity"],
