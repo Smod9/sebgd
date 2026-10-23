@@ -4,12 +4,10 @@ import Link from "next/link";
 import { ProjectExplorer } from "@/components/ProjectExplorer";
 import { EmptyState } from "@/components/EmptyState";
 import { ThoughtQuote } from "@/components/ThoughtQuote";
-import { projectFromPost } from "@/components/ProjectGrid";
 import { listPosts } from "@/lib/posts";
-import { listProjectShowcase } from "@/lib/project-showcase";
+import { listedProjectCards, listProjectShowcase } from "@/lib/project-showcase";
 import { isDesignPreview } from "@/lib/design-preview";
 import { listThoughts } from "@/lib/thoughts";
-import { orderProjectCards } from "@/lib/project-filters";
 import { SITE } from "@/lib/site";
 
 export default async function HomePage({
@@ -22,7 +20,7 @@ export default async function HomePage({
     listPosts({ type: "work", status: "published" }),
     listThoughts(false),
   ]);
-  const published = orderProjectCards(work.map(projectFromPost));
+  const published = listedProjectCards(work);
   const projects = preview ? await listProjectShowcase(published) : published;
 
   return (

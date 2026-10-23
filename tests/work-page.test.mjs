@@ -595,6 +595,30 @@ test("project filters combine groups and case-insensitive search across titles, 
   assert.equal(filterProjects(cards, "no match", "all").length, 0);
 });
 
+test("hidden projects leave both public grids while preserving published details and other project order", async () => {
+  await withLocalStore(async (source) => {
+    const store = source("lib/posts.ts");
+    await store.createPost({ type: "work", slug: "luum", title: "Luum.io", body: "Company.", status: "published", meta: { gallery_position: 0 } });
+    await store.createPost({ type: "work", slug: "luumi", title: "Luumi", body: "Cat.", status: "published", meta: { gallery_position: 1 } });
+    const hidden = await store.createPost({ type: "work", slug: "osmosis-in-3d", title: "Osmosis in 3D", body: "Preserve the original explainer.", status: "published", meta: { gallery_hidden: true, gallery_position: 2 } });
+    await store.createPost({ type: "work", slug: "bkr", title: "BKR straw lid", status: "published", meta: { gallery_position: 3 } });
+    await store.createPost({ type: "work", slug: "schematic", title: "Schematic Maker", status: "published" });
+    const home = source("app/page.tsx");
+    const work = source("app/work/page.tsx");
+    for (const html of [renderToStaticMarkup(await home.default({ searchParams: Promise.resolve({}) })), renderToStaticMarkup(await work.default({}))]) {
+      assert.ok(!html.includes("Osmosis in 3D"));
+      assert.ok(!html.includes("/work/osmosis-in-3d"));
+      assert.ok(html.indexOf("Luum.io") < html.indexOf("Luumi"));
+      assert.ok(html.indexOf("BKR straw lid") < html.indexOf("Schematic Maker"));
+    }
+    const listing = renderToStaticMarkup(await work.default({}));
+    assert.match(listing, /4 published/);
+    const detail = source("app/work/[slug]/page.tsx");
+    assert.match(renderToStaticMarkup(await detail.default({ params: Promise.resolve({ slug: hidden.slug }) })), /Preserve the original explainer/);
+    assert.equal((await store.getPost(hidden.slug)).status, "published");
+  });
+});
+
 test("published gallery positions keep Luumi second while preserving the other project order", () => {
   const { orderProjectCards } = loadSource(path.join(root, "src/lib/project-filters.ts"));
   const cards = [

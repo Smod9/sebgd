@@ -4,11 +4,9 @@ import type { Metadata } from "next";
 import { ProjectExplorer } from "@/components/ProjectExplorer";
 import { EmptyState } from "@/components/EmptyState";
 import { PageIntro, SectionRule } from "@/components/PageChrome";
-import { projectFromPost } from "@/components/ProjectGrid";
 import { listPosts } from "@/lib/posts";
 import { isDesignPreview } from "@/lib/design-preview";
-import { listProjectShowcase } from "@/lib/project-showcase";
-import { orderProjectCards } from "@/lib/project-filters";
+import { listedProjectCards, listProjectShowcase } from "@/lib/project-showcase";
 
 export const metadata: Metadata = {
   title: "Projects",
@@ -20,7 +18,7 @@ export default async function WorkPage({ searchParams }: {
 }) {
   const workPosts = await listPosts({ type: "work", status: "published" });
   const preview = isDesignPreview((await searchParams)?.preview);
-  const published = orderProjectCards(workPosts.map(projectFromPost));
+  const published = listedProjectCards(workPosts);
   const projects = preview ? await listProjectShowcase(published) : published;
 
   return (
@@ -32,7 +30,7 @@ export default async function WorkPage({ searchParams }: {
       </PageIntro>
       <SectionRule
         left="Projects"
-        right={preview ? `${projects.length} in preview` : `${workPosts.length} published`}
+        right={preview ? `${projects.length} in preview` : `${projects.length} published`}
       />
       {preview ? <p className="preview-notice">Local design preview · proposed project selection, not published.</p> : null}
       {projects.length > 0 ? (
