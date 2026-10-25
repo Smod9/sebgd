@@ -75,7 +75,7 @@ test("rejects reserved names, secrets, traversal, duplicates, oversized and inco
   }
   assert.equal((await api("PUT", name, { revision: null, files: [file("index.html", "x".repeat(3 * 1024 * 1024 + 1))] })).status, 413);
   assert.equal((await api("PUT", name, { files: good })).status, 400);
-  assert.equal((await hosted("/")).status, 404);
+  assert.equal((await hosted("/")).status, 307);
 });
 
 let revision;
@@ -98,7 +98,9 @@ test("publishes HTML, scripts, nested indexes and exact binary assets on its sub
   assert.match(await (await hosted("/docs/")).text(), /Docs/);
   assert.equal(await (await hosted("/about")).text(), "About");
   assert.equal((await hosted("/missing.js")).status, 404);
-  assert.equal((await hosted("/", "unpublished-site")).status, 404);
+  const unknown = await hosted("/", "unknown-site");
+  assert.equal(unknown.status, 307);
+  assert.equal(unknown.headers.get("location"), "https://sebgd.com/");
   assert.equal((await fetch(`${base}/hosted/${name}`)).status, 404);
   assert.equal((await hosted("/api/admin/posts")).status, 404);
   assert.equal((await hosted("/admin")).status, 404);

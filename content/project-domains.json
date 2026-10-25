@@ -7,5 +7,6 @@
   { "slug": "hotfoot-sailing", "hostname": "fleet.sebgd.com", "destination": "https://hotfootsailing.com", "mode": "native", "hostingProject": "horizonsailing" },
   { "slug": "final-draft", "hostname": "pod.sebgd.com", "destination": "https://finaldraftpod.com", "mode": "native", "hostingProject": "final-draft-podcast" },
   { "slug": "read-the-shift", "hostname": "shift.sebgd.com", "destination": "https://shift.sebgd.com", "mode": "static", "hostingProject": "sebgd" },
+  { "slug": "learning-maze", "hostname": "maze.sebgd.com", "destination": "https://maze.sebgd.com", "mode": "static", "hostingProject": "sebgd" },
   { "slug": "luumi", "hostname": "cat.sebgd.com", "destination": "https://luum.io/luumi", "mode": "redirect", "hostingProject": "sebgd" }
 ]

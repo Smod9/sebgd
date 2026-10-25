@@ -20,12 +20,41 @@ const rules = loadSource("src/lib/static-sites/rules.ts");
 test("migrated static domains use the publisher while existing app aliases remain reserved", () => {
   assert.equal(rules.validateSiteName("shift"), "shift");
   assert.equal(rules.hostedSiteName("shift.sebgd.com"), "shift");
+  assert.equal(rules.validateSiteName("maze"), "maze");
+  assert.equal(rules.hostedSiteName("maze.sebgd.com"), "maze");
   for (const name of ["cat", "dojo", "marbles", "bv", "sls", "schem", "www", "admin"]) assert.throws(() => rules.validateSiteName(name), /reserved/);
   for (const name of ["cat", "dojo", "marbles", "bv", "sls", "schem", "www"]) assert.equal(rules.hostedSiteName(`${name}.sebgd.com`), null);
   const config = loadSource("next.config.ts").default;
   const redirects = config.redirects();
   assert.ok(!redirects.some((redirect) => redirect.has.some((condition) => condition.value === "shift.sebgd.com")));
   assert.ok(redirects.some((redirect) => redirect.has.some((condition) => condition.value === "cat.sebgd.com")));
+});
+
+test("unknown subdomains redirect to the homepage without carrying paths or query data", async () => {
+  const { serveSite } = loadSource("src/lib/static-sites/serve.ts", {
+    "@/lib/static-sites/rules": rules,
+    "@/lib/static-sites/store": { readSite: async () => null },
+    "@/lib/static-sites/storage": { readObject: async () => { throw new Error("No assets should be read for an unknown site"); } },
+  });
+  for (const method of ["GET", "HEAD"]) {
+    const response = await serveSite(new Request("https://typo.sebgd.com/api/admin/posts?next=https://example.com", { method, headers: { "x-forwarded-host": "example.com" } }), "typo", "/api/admin/posts");
+    assert.equal(response.status, 307);
+    assert.equal(response.headers.get("location"), "https://sebgd.com/");
+    assert.equal(response.headers.get("cache-control"), "no-store");
+  }
+});
+
+test("unpublished sites and missing assets on real sites keep returning 404", async () => {
+  for (const site of [{ published: false }, { published: true, files: [], spa: false }]) {
+    const { serveSite } = loadSource("src/lib/static-sites/serve.ts", {
+      "@/lib/static-sites/rules": rules,
+      "@/lib/static-sites/store": { readSite: async () => ({ site }) },
+      "@/lib/static-sites/storage": { readObject: async () => null },
+    });
+    const response = await serveSite(new Request("https://maze.sebgd.com/missing.js"), "maze", "/missing.js");
+    assert.equal(response.status, 404);
+    assert.equal(response.headers.get("location"), null);
+  }
 });
 
 test("hosted project pages can appear in the portfolio preview without allowing arbitrary framing", async () => {

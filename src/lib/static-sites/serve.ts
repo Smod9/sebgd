@@ -12,7 +12,8 @@ export async function serveSite(request: Request, name: string, pathname: string
   } catch { return missing(); }
   try {
     const result = await readSite(name);
-    if (!result?.site.published) return missing();
+    if (!result) return new Response(null, { status: 307, headers: { Location: `https://${SITE_DOMAIN}/`, "Cache-Control": "no-store" } });
+    if (!result.site.published) return missing();
     const site = result.site;
     const resolved = resolveSitePath(site.files.map((file) => file.path), path.join("/"), site.spa, (request.headers.get("accept") || "").includes("text/html"));
     const file = site.files.find((entry) => entry.path === resolved);
