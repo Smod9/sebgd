@@ -556,6 +556,82 @@ test("shared thoughts supply quote metadata and a real 1200x630 PNG while keepin
   }
 });
 
+test("social cards keep hostile content as text and preserve both fixed SVG designs", async () => {
+  const { default: sharp } = await import("sharp");
+  const previousMode = process.env.NODE_ENV;
+  const originalFetch = globalThis.fetch;
+  const outbound = [];
+  try {
+    process.env.NODE_ENV = "production";
+    // Neither card should fetch a URL found in a title, quote, summary, or tag.
+    globalThis.fetch = async (input) => {
+      const url = input instanceof Request ? input.url : String(input);
+      // The bundled renderer loads its local WASM through a data URL.
+      if (url.startsWith("data:")) return originalFetch(input);
+      outbound.push(url);
+      throw new Error("Unexpected network request during social-card rendering");
+    };
+    await withLocalStore(async (source) => {
+      const store = source("lib/posts.ts");
+      const { ProjectSocialCard } = source("components/ProjectSocialCard.tsx");
+      const projectImage = source("app/api/social-card/[slug]/route.tsx");
+      const thoughtImage = source("app/api/thought-social-card/[slug]/route.tsx");
+      const svg = (html) => html.match(/<svg\b[\s\S]*?<\/svg>/)?.[0];
+      const samples = [
+        "Quotes: \"double\", 'single', & <angle> — café.",
+        '</text><image href="http://127.0.0.1:9/card"/><text>',
+        '\" fill=\"url(http://127.0.0.1:9/card)\" onload=\"alert(1)',
+        '<style>@import url(http://127.0.0.1:9/card)</style>',
+        "Line one\nLine two with **Markdown** & <svg>literal markup</svg>.",
+      ];
+      for (const voice of [false, true]) {
+        const prefix = voice ? "Speak: " : "Project: ";
+        const fixedSvg = svg(renderToStaticMarkup(ProjectSocialCard({ title: prefix, description: "", tags: [] })));
+        assert.ok(fixedSvg);
+        for (const [index, sample] of samples.entries()) {
+          const title = prefix + sample;
+          const html = renderToStaticMarkup(ProjectSocialCard({ title, description: sample, tags: [sample] }));
+          assert.equal(svg(html), fixedSvg, "content must not change SVG attributes, styles, or markup");
+          assert.doesNotMatch(html, /<(?:image|style|script)\b/);
+          const slug = `card-${Number(voice)}-${index}`;
+          await store.createPost({ type: "work", slug, title, body: sample, status: "published", tags: [sample], meta: { summary: sample } });
+          await store.createPost({ type: "note", slug: `thought-${slug}`, title: "Thought", body: sample, status: "published" });
+          for (const [route, id] of [[projectImage, slug], [thoughtImage, `thought-${slug}`]]) {
+            const response = await route.GET(new Request(`http://localhost/${id}?title=ignored&style=ignored`), { params: Promise.resolve({ slug: id }) });
+            assert.equal(response.status, 200);
+            assert.match(response.headers.get("content-type"), /image\/png/);
+            assert.equal(response.headers.get("cache-control"), "no-store");
+            const png = Buffer.from(await response.arrayBuffer());
+            assert.deepEqual([...png.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
+            const decoded = await sharp(png).raw().toBuffer({ resolveWithObject: true });
+            assert.equal(decoded.info.width, 1200);
+            assert.equal(decoded.info.height, 630);
+            assert.ok(decoded.data.some((byte) => byte < 200), "the rendered card contains visible content");
+          }
+        }
+      }
+      assert.deepEqual(outbound, []);
+    });
+  } finally {
+    globalThis.fetch = originalFetch;
+    if (previousMode === undefined) delete process.env.NODE_ENV; else process.env.NODE_ENV = previousMode;
+  }
+});
+
+test("native image processing preserves SVG formatting and AVIF decoding", async () => {
+  const { default: sharp } = await import("sharp");
+  const svg = Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="64" height="32"><rect width="64" height="32" fill="#ff0000"/><rect x="32" width="32" height="32" fill="#0000ff"/></svg>');
+  const { data, info } = await sharp(svg).resize(32, 16).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+  assert.equal(info.width, 32);
+  assert.equal(info.height, 16);
+  assert.deepEqual([...data.subarray(0, 3)], [255, 0, 0]);
+  assert.deepEqual([...data.subarray(data.length - 3)], [0, 0, 255]);
+  const avif = await sharp(svg).avif().toBuffer();
+  const decoded = await sharp(avif).png().toBuffer();
+  assert.equal(decoded.readUInt32BE(16), 64);
+  assert.equal(decoded.readUInt32BE(20), 32);
+});
+
 test("homepage features only the newest published thought as a pull quote, even during design preview", async () => {
   const previousMode = process.env.NODE_ENV;
   const previousFlag = process.env.SEBGD_DESIGN_PREVIEW;
